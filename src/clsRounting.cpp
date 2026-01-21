@@ -155,6 +155,8 @@ MySpace::BufferRequest clsRounting::CheckRounting()
         if (!_isMethodAllowed(_Buffer.BufferRead.RequestAtEnd.method, route->allowed_methods))
             throw HTTP_METHOD_NOT_ALLOWED;
         
+        _Buffer.BufferRead.RequestAtEnd.route = *route;
+        
         // Check if redirect exists for this route
         if (route->redirect.size())
         {

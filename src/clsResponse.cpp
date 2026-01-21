@@ -180,7 +180,7 @@ void clsResponse::sendRedirect(const std::string& redirectPath, int statusCode)
 
 bool clsResponse::CheckIsCGI()
 {
-    if (_Buffer.BufferRead.RequestAtEnd.isRequestForCGI && _Buffer.BufferRead.isRouting && !_Buffer.BufferRead.isComplete)
+    if (_Buffer.BufferRead.RequestAtEnd.isRequestForCGI && _Buffer.BufferRead.isRouting && _Buffer.BufferRead.isComplete)
         return true;
     return false;
 }
@@ -205,8 +205,7 @@ void clsResponse::SendResponse()
             case MySpace::GET:
                 // _Buffer.BufferRead.RequestAtEnd.
                 cgi.handleCgiRequest(_Buffer.BufferRead.RequestAtEnd.route);
-                result = sendAll(cgi._fd_client, cgi.response.c_str(), 
-                          cgi.response.length());
+                result = sendAll(cgi._fd_client, cgi.response.c_str(), cgi.response.length());
                 if (result < 0)
                 {
                     perror("send failed");

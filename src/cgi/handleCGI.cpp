@@ -111,9 +111,8 @@ void Cgi::handleCgiRequest(const Route &route)
     else 
         throw std::runtime_error( "500 1");
     // create pipes
-        int pipe_in[2];
+    int pipe_in[2];
     int pipe_out[2];
-
     if (!pipe(pipe_in) == 0 || !pipe(pipe_out) == 0)
         throw std::runtime_error( "500 2");
     pid_t pid = fork();
