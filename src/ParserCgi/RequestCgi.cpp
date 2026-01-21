@@ -22,7 +22,6 @@ std::string Cgi::getMethod() const { return _method; }
 
 ssize_t sendAll(int socket_fd, const char *data, size_t length)
 {
-    std::cout << "start" << std::endl;
     size_t total_sent = 0;
     size_t remaining = length;
     while (total_sent < length)
@@ -34,7 +33,6 @@ ssize_t sendAll(int socket_fd, const char *data, size_t length)
         total_sent += bytes_sent;
         remaining -= bytes_sent;
     }
-    std::cout << "end" << std::endl;
     return total_sent;
 }
 std::string Cgi::getTarget() const { return _target; }

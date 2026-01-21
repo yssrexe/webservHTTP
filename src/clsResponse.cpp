@@ -211,6 +211,7 @@ void clsResponse::SendResponse()
                     perror("send failed");
                     return;
                 }
+                _Buffer.BufferWrite.isComplete = true; // gheda chre7 liya hadi chno kadir
                 break;
             case MySpace::DELETE:
                 _performentDelete(_Buffer.BufferRead.RequestAtEnd.target);

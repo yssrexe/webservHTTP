@@ -252,8 +252,6 @@ void clsServer::processEppillin()
         disable_epollout(fd);
         mapBuffers.erase(fd);
     }
-
-    
 }
 
 void  clsServer::Run()
