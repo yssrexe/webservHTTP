@@ -16,4 +16,3 @@ print("hello Yassir, Welcome to webserv project")
 print("<br>")
 print(f"your age is {add(10, 12)}")
 print("</body></html>")
-

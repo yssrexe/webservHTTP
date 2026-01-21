@@ -129,6 +129,7 @@ void clsRounting::checkRoutingForPost()
 
 
     _Buffer.BufferRead.isRouting = true;
+    _Buffer.BufferRead.RequestAtEnd.route = *route;
 
     _Buffer.BufferRead.RequestAtEnd.target = "" + route->upload_dir + "/" + MySpace::generateUniqueFilename(_Buffer.BufferRead.Content_Type);
 

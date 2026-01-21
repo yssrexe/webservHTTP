@@ -2,6 +2,7 @@
 #define MYLABRARY_HPP
 
 #include <map>
+#include "Route.hpp"
 
 #define HTTP_BAD_REQUEST            400  // Invalid request syntax
 #define HTTP_UNAUTHORIZED           401  // Authentication required
@@ -53,6 +54,7 @@ namespace MySpace
         std::string target;                  // /index.html, /item/5
         std::string queryString;              // key1=value1&key2=value2
         std::string version;
+        Route route;
       
         std::map<std::string, std::string> headers;  // key: value
 

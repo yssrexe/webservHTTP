@@ -23,6 +23,7 @@ public:
     std::string dir_listing;
     std::map<int, std::string> redirect;
 
+    Route() {}
     Route(std::string line);
     void insertName(std::string &name);
     void insertRootPath(std::string &rootPath);

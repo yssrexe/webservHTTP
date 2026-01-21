@@ -1,4 +1,6 @@
 #include "../include/clsResponse.hpp"
+#include "../include/cgi.hpp"
+
 
 
 std::string clsResponse::readFile(const std::string& path)
@@ -122,13 +124,14 @@ void clsResponse::_performentDelete(std::string path)
     std::stringstream response ;
 
 
-    response << "HTTP/1.1 " << HTTP_NOT_FOUND << " " << MySpace::getStatusReason(HTTP_NO_CONTENT) << "\r\n";
+    response << "HTTP/1.1 " << HTTP_SUCCESS << " " << MySpace::getStatusReason(HTTP_SUCCESS) << "\r\n";
     response << "Content-Type: "<< MySpace::getContentType(path) << "\r\n";
     response << "Content-Length: " << 0 << "\r\n";
     response << "Connection: close\r\n";
     response << "\r\n";
     if (std::remove(path.c_str()) != 0)
         throw HTTP_INTERNAL_SERVER_ERROR;
+    
     if(send(_fd_Clieant, response.str().c_str(), response.str().size(), 0) <= 0)
         std::cout << "failded send in deleled "<< std::endl;
      _Buffer.BufferWrite.isComplete = true;
@@ -193,12 +196,22 @@ void clsResponse::SendResponse()
         send(_fd_Clieant, response.c_str(), response.size(), 0);
 
     }
-    else if (0)//CheckIsCGI()
+    else if (CheckIsCGI())
     {
+        Cgi cgi(_Buffer.BufferRead.RequestAtEnd,_fd_Clieant);
+        ssize_t result;
         switch (_Buffer.type)
         {
             case MySpace::GET:
-                // Handle CGI GET request here (not implemented in this snippet)
+                // _Buffer.BufferRead.RequestAtEnd.
+                cgi.handleCgiRequest(_Buffer.BufferRead.RequestAtEnd.route);
+                result = sendAll(cgi._fd_client, cgi.response.c_str(), 
+                          cgi.response.length());
+                if (result < 0)
+                {
+                    perror("send failed");
+                    return;
+                }
                 break;
             case MySpace::DELETE:
                 _performentDelete(_Buffer.BufferRead.RequestAtEnd.target);
