@@ -55,7 +55,7 @@ public:
     void addHeader(const std::string& key, const std::string& value);
     void setHeaders(const std::map<std::string, std::string>& headers);
     
-    void handleCgiRequest(const Route &route);
+    MySpace::BufferRequest Cgi::handleCgiRequest(MySpace::BufferRequest _buffer);
     void clear();
     //bool isCgiRequest(const Route &route, std::string &errorMessage) const;
 };

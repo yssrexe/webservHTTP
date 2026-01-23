@@ -69,6 +69,13 @@ namespace MySpace
         return contentType.find("multipart/form-data") != std::string::npos;
     }
 
+    bool CheckIsCGI(MySpace::BufferRequest _Buffer)
+    {
+        if (_Buffer.BufferRead.RequestAtEnd.isRequestForCGI && _Buffer.BufferRead.isRouting && _Buffer.BufferRead.isComplete)
+            return true;
+        return false;
+    }
+
     size_t getFileSize(const std::string& path)
     {
         struct stat st;

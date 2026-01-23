@@ -235,6 +235,11 @@ void clsServer::processEppillin()
         clsRounting Rounting(mapBuffers[fd],mapServers[clientToServer[fd]]);
         mapBuffers[fd] = Rounting.CheckRounting();
 
+        if (MySpace::CheckIsCGI(mapBuffers[fd]))
+        {
+            Cgi cgi(mapBuffers[fd].BufferRead.RequestAtEnd,fd);
+            mapBuffers[fd] = cgi.handleCgiRequest(mapBuffers[fd]);
+        }
         if (mapBuffers[fd].type == MySpace::POSTE)
         {
             clsPostBodyFileHandler clsPostBodyFileHandler(mapBuffers[fd]);
@@ -288,9 +293,11 @@ void  clsServer::Run()
                     std::string chunk(buffer, bytes);
                     if (is_skip(chunk))
                         goto label;
+
                     if (!mapBuffers.count(fd))
                         mapBuffers[fd] = initBuffer();
                     mapBuffers[fd].BufferRead.Buffer.append(chunk);
+
                     processEppillin();
                     if (mapBuffers[fd].BufferRead.isComplete == true)
                         enable_epollout(fd);

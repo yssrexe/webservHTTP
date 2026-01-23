@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Set content type header
-echo "Content-Type: text/plain"
+echo "Content-Type:                   text/plain"
 echo "" # Blank line to separate headers from body
 
 # Output the response body

@@ -12,7 +12,7 @@ def add(a, b):
 
 print("<html><body>")
 print("<br>")
-print("hello Yassir, Welcome to webserv project")
+print("hello Ayoub, Welcome to webserv project")
 print("<br>")
 print(f"your age is {add(10, 12)}")
 print("</body></html>")

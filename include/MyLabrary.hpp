@@ -92,6 +92,8 @@ namespace MySpace
 
     std::string extractBoundary(const std::string& contentType);
 
+    bool CheckIsCGI(MySpace::BufferRequest _Buffer);
+    
     MySpace::BufferRequest trimBoundaryFromBuffer(size_t& dataSize, MySpace::BufferRequest buffer);
     
     bool isMultipartRequest(const std::string& ContentType);
