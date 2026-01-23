@@ -14,7 +14,7 @@
 #define HTTP_PAYLOAD_TOO_LARGE      413  // Body size exceeds limit
 #define HTTP_URI_TOO_LONG           414  // URI too long
 #define HTTP_UNSUPPORTED_MEDIA_TYPE 415  // Content-Type not supported
-#define HTTP_SUCCESS 200 
+#define HTTP_SUCCESS                200 
 #define HTTP_NO_CONTENT             204
 #define HTTP_INTERNAL_SERVER_ERROR  500
 
@@ -67,6 +67,7 @@ namespace MySpace
         bool isMultipart;
         bool parsingLineAndHeader;
         size_t ContentLength;
+        bool CreateEnv;
         size_t ofset;
         int fd;
         std::string Content_Type;
@@ -78,6 +79,9 @@ namespace MySpace
         bool isSendHeader;
         bool eraseHeadersDone;
         std::string boundary;
+        bool forked;
+        bool finishExc;
+        pid_t _pid;
         std::string boundaryEnd;
         bool isfileOpen;
     };

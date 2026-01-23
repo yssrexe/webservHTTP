@@ -8,9 +8,9 @@ SOURCE =  	src/ConfigParser/Config.cpp src/ConfigParser/Route.cpp\
 			src/clsRounting.cpp \
 			src/clsPostBodyFileHandler.cpp \
 			src/MyLabrary.cpp \
-			src/cgi/cgi.cpp \
 			src/cgi/handleCGI.cpp \
-			src/ParserCgi/RequestCgi.cpp 
+			src/cgi/PrepareCgiRes.cpp \
+			src/cgi/ParserCgi/RequestCgi.cpp 
 
 OBJ = $(SOURCE:.cpp=.o)
 NAME = webserv

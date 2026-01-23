@@ -25,8 +25,16 @@ private:
     std::string _querys;
     std::string _version;
     std::string _bodyFilePath;
+    Route route;
+    int statuspid;
+    pid_t pid;
+    std::string interpreter;
+    MySpace::BufferRequest _Buffer;
+    std::vector<char *> envp;
     std::map<std::string, std::string> _headers;
 
+    int pipe_in[2];
+    int pipe_out[2];
 public:
     int _fd_client;
     std::string response;
@@ -34,6 +42,8 @@ public:
     ~Cgi();
     
     // Getters
+    void SetEnv();
+    void CreateChild();
     std::string getMethod() const;
     std::string getTarget() const;
     std::string getQuerys() const;
@@ -55,7 +65,7 @@ public:
     void addHeader(const std::string& key, const std::string& value);
     void setHeaders(const std::map<std::string, std::string>& headers);
     
-    MySpace::BufferRequest Cgi::handleCgiRequest(MySpace::BufferRequest _buffer);
+    MySpace::BufferRequest handleCgiRequest(MySpace::BufferRequest _buffer);
     void clear();
     //bool isCgiRequest(const Route &route, std::string &errorMessage) const;
 };

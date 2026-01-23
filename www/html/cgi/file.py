@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import time
 
 print("Content-Type: text/html")
 print("Status: 200 OK")
@@ -12,6 +13,7 @@ def add(a, b):
 
 print("<html><body>")
 print("<br>")
+# time.sleep(5)
 print("hello Ayoub, Welcome to webserv project")
 print("<br>")
 print(f"your age is {add(10, 12)}")

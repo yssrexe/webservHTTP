@@ -176,7 +176,10 @@ MySpace::sData initData()
     Data.isComplete = false;
     Data.isMultipart = false;
     Data.eraseHeadersDone = false;
+    Data.CreateEnv = false;
+    Data.forked = false;
     Data.isRedirection = false;
+    Data.finishExc = false;
     return Data;
 }
 
@@ -234,12 +237,6 @@ void clsServer::processEppillin()
 
         clsRounting Rounting(mapBuffers[fd],mapServers[clientToServer[fd]]);
         mapBuffers[fd] = Rounting.CheckRounting();
-
-        if (MySpace::CheckIsCGI(mapBuffers[fd]))
-        {
-            Cgi cgi(mapBuffers[fd].BufferRead.RequestAtEnd,fd);
-            mapBuffers[fd] = cgi.handleCgiRequest(mapBuffers[fd]);
-        }
         if (mapBuffers[fd].type == MySpace::POSTE)
         {
             clsPostBodyFileHandler clsPostBodyFileHandler(mapBuffers[fd]);
@@ -269,6 +266,8 @@ void  clsServer::Run()
             perror("epoll_wait");
             break;
         }
+        std::cout << "hna 1" << std::endl;
+
         for (int i = 0; i < ready; ++i)
         {
             label:
@@ -299,8 +298,13 @@ void  clsServer::Run()
                     mapBuffers[fd].BufferRead.Buffer.append(chunk);
 
                     processEppillin();
-                    if (mapBuffers[fd].BufferRead.isComplete == true)
+                    if ((mapBuffers[fd].BufferRead.isComplete == true && !mapBuffers[fd].BufferRead.RequestAtEnd.isRequestForCGI) )
+                       // || (mapBuffers[fd].BufferRead.isComplete == true && mapBuffers[fd].BufferRead.RequestAtEnd.isRequestForCGI && mapBuffers[fd].BufferRead.finishExc))
+                    {
+                        std::cout << "hna 2" << std::endl;
+
                         enable_epollout(fd);
+                    }
                 }
                 if (events[i].events & EPOLLOUT)
                     processRequestAndRespond();

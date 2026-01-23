@@ -8,7 +8,7 @@
 #include <cstdlib>
 #include <fcntl.h>
 #include <unistd.h>
-#include <cgi.hpp>
+#include "cgi.hpp"
 
 #define Key 0
 #define Value 1

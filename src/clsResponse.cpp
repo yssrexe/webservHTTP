@@ -178,8 +178,6 @@ void clsResponse::sendRedirect(const std::string& redirectPath, int statusCode)
     _Buffer.BufferWrite.isComplete = true;
 }
 
-
-
 void clsResponse::SendResponse()
 {
 
@@ -193,23 +191,27 @@ void clsResponse::SendResponse()
     }
     else if (MySpace::CheckIsCGI(_Buffer))
     {
-        Cgi cgi(_Buffer.BufferRead.RequestAtEnd,_fd_Clieant);
-        ssize_t result;
+        //Cgi cgi(_Buffer.BufferRead.RequestAtEnd,_fd_Clieant);
+        //ssize_t result;
+        std::cout << "braa" << std::endl;
+        Cgi cgi(_Buffer.BufferRead.RequestAtEnd,0);
         switch (_Buffer.type)
         {
             case MySpace::GET:
-                // send response to the client class clsCGIResponest(_Buffer.BufferWrite)
-                if (result < 0)
+    
+                _Buffer = cgi.handleCgiRequest(_Buffer);
+                if (_Buffer.BufferRead.finishExc)
                 {
-                    perror("send failed");
-                    return;
+                    char buffer[1024];
+                    read(_Buffer.BufferRead.fd, buffer, 1024);
+                    std::cout << "buffer : " <<_Buffer.BufferRead.isComplete << buffer << std::endl;
+                    _Buffer.BufferWrite.isComplete = true; // gheda chre7 liya hadi chno kadir
                 }
-                _Buffer.BufferWrite.isComplete = true; // gheda chre7 liya hadi chno kadir
                 break;
             case MySpace::DELETE:
                 _performentDelete(_Buffer.BufferRead.RequestAtEnd.target);
                 break;
-            // case MySpace::POSTE:
+             case MySpace::POSTE:
                 // Handle CGI POST request here (not implemented in this snippet)
 
                 break;
