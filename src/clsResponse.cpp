@@ -192,12 +192,11 @@ void clsResponse::sendHeaderCGI(size_t fileSize)
     std::string header;
     header += "HTTP/1.1 200 OK\r\n";
     header += "Content-Type: " + _Buffer.BufferWrite.Content_Type + "\r\n";
-    header += "Content-Length: " + fileSizeStr + "\r\n";
+    header += "Transfer-Encoding: chunked";
     header += "Connection: keep-alive\r\n";
     header += "\r\n";
     if(-1 == send(_fd_Clieant, header.c_str(), header.size(), 0))
         _Buffer.BufferRead.isSendHeader = false;
-    std::cout << "send header " << std::endl;
 }
 
 
@@ -229,7 +228,7 @@ void clsResponse::SendResponse()
                     _Buffer.BufferWrite.Content_Type = "text/html";
                     int ssize = MySpace::getPipeSize(_Buffer.BufferWrite.fd);
                     std::cout << "size : " << ssize << std::endl;
-                    sendHeaderCGI(100);
+                    sendHeaderCGI(0);
                     
                     sendchunks(_Buffer.BufferWrite.RequestAtEnd.target);
                     _Buffer.BufferWrite.isComplete = true; // gheda chre7 liya hadi chno kadir
