@@ -82,6 +82,8 @@ namespace MySpace
         bool forked;
         bool finishExc;
         pid_t _pid;
+        int pipe_in_fd;
+        int pipe_out_fd;
         std::string boundaryEnd;
         bool isfileOpen;
     };
@@ -93,6 +95,10 @@ namespace MySpace
         sData BufferRead;
         sData BufferWrite;
     };   
+
+    size_t getPipeSize(int pipeFd);
+
+     void EraseHearse(MySpace::BufferRequest& _Buffer);
 
     std::string extractBoundary(const std::string& contentType);
 

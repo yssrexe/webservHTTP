@@ -51,6 +51,7 @@ void clsResponse::sendchunks(const std::string path)
 {
     if (!_Buffer.BufferRead.isRouting || !_Buffer.BufferRead.isSendHeader)
         return;
+    std::cout << "body   "<< _Buffer.BufferWrite.Buffer << std::endl;
     if (!_Buffer.BufferWrite.isfileOpen) 
     {
         _Buffer.BufferWrite.fd = open(path.c_str(), O_RDONLY);
@@ -178,6 +179,28 @@ void clsResponse::sendRedirect(const std::string& redirectPath, int statusCode)
     _Buffer.BufferWrite.isComplete = true;
 }
 
+void clsResponse::sendHeaderCGI(size_t fileSize)
+{
+    if (_Buffer.BufferRead.isSendHeader)
+        return;
+
+    _Buffer.BufferRead.ContentLength = fileSize;
+    _Buffer.BufferRead.isSendHeader = true;
+    std::stringstream ss;
+    ss << fileSize;
+    std::string fileSizeStr = ss.str();
+    std::string header;
+    header += "HTTP/1.1 200 OK\r\n";
+    header += "Content-Type: " + _Buffer.BufferWrite.Content_Type + "\r\n";
+    header += "Content-Length: " + fileSizeStr + "\r\n";
+    header += "Connection: keep-alive\r\n";
+    header += "\r\n";
+    if(-1 == send(_fd_Clieant, header.c_str(), header.size(), 0))
+        _Buffer.BufferRead.isSendHeader = false;
+    std::cout << "send header " << std::endl;
+}
+
+
 void clsResponse::SendResponse()
 {
 
@@ -193,18 +216,22 @@ void clsResponse::SendResponse()
     {
         //Cgi cgi(_Buffer.BufferRead.RequestAtEnd,_fd_Clieant);
         //ssize_t result;
-        std::cout << "braa" << std::endl;
         Cgi cgi(_Buffer.BufferRead.RequestAtEnd,0);
         switch (_Buffer.type)
         {
             case MySpace::GET:
     
                 _Buffer = cgi.handleCgiRequest(_Buffer);
+                std::cout << _Buffer.BufferRead.finishExc << std::endl;
                 if (_Buffer.BufferRead.finishExc)
                 {
-                    char buffer[1024];
-                    read(_Buffer.BufferRead.fd, buffer, 1024);
-                    std::cout << "buffer : " <<_Buffer.BufferRead.isComplete << buffer << std::endl;
+                    MySpace::EraseHearse(_Buffer);
+                    _Buffer.BufferWrite.Content_Type = "text/html";
+                    int ssize = MySpace::getPipeSize(_Buffer.BufferWrite.fd);
+                    std::cout << "size : " << ssize << std::endl;
+                    sendHeaderCGI(100);
+                    
+                    sendchunks(_Buffer.BufferWrite.RequestAtEnd.target);
                     _Buffer.BufferWrite.isComplete = true; // gheda chre7 liya hadi chno kadir
                 }
                 break;

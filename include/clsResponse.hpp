@@ -33,7 +33,7 @@ private:
     void _performentPost();
     bool CheckIsCGI();
     void sendRedirect(const std::string& redirectPath, int statusCode = 301); // for redirect responses
-
+    void sendHeaderCGI(size_t fileSize);
 public:
 
     void SendResponse();

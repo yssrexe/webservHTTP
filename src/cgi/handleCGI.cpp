@@ -51,6 +51,7 @@ std::map<std::string, std::string> parseValue(std::string &line)
 
 void Cgi::SetEnv()
 {
+    std::cout << "cout" << std::endl;
      std::vector<std::string> tenv;
     tenv.push_back("REQUEST_METHOD=" + getMethod());
     tenv.push_back("SCRIPT_NAME=" + getTarget());
@@ -122,23 +123,28 @@ void Cgi::CreateChild()
 
 MySpace::BufferRequest Cgi::handleCgiRequest(MySpace::BufferRequest buffer)
 {
-    std::cout << "hello " << std::endl;
     route = buffer.BufferRead.RequestAtEnd.route;
     _Buffer = buffer;
     if (!_Buffer.BufferRead.CreateEnv)
+    {
         SetEnv();
+        _Buffer.BufferRead.CreateEnv = true;
+    }
 
     if (!_Buffer.BufferRead.forked)
     {
         CreateChild();
+        _Buffer.BufferRead.forked = true;
         _Buffer.BufferRead._pid = pid;
+        _Buffer.BufferRead.pipe_in_fd = pipe_in[1];
+        _Buffer.BufferRead.pipe_out_fd = pipe_out[0];
     }
     else
     {
         pid = _Buffer.BufferRead._pid;
-        // statuspid = _Buffer.BufferRead.
+        pipe_in[1] = _Buffer.BufferRead.pipe_in_fd;
+        pipe_out[0] = _Buffer.BufferRead.pipe_out_fd;
     }
-
     int waitResult = waitpid(pid, &statuspid, WNOHANG);
     if (waitResult > 0 && WIFEXITED(statuspid)) 
     {
@@ -147,11 +153,11 @@ MySpace::BufferRequest Cgi::handleCgiRequest(MySpace::BufferRequest buffer)
         
         _Buffer.BufferRead.finishExc = true;
         _Buffer.BufferRead.isComplete = true;
-        std::cout << "dkhel" << std::endl;
+        std::cout << "dkhel 476" << std::endl;
         _Buffer.BufferWrite.isfileOpen = true;
         _Buffer.BufferWrite.fd = pipe_out[0];
+        std::cout << "fd send " << _Buffer.BufferWrite.fd << std::endl;
+
     }
-    std::cout << "dkhellllllllllllllllll" << std::endl;
-    
     return _Buffer;
 }

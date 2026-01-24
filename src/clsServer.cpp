@@ -258,7 +258,7 @@ void clsServer::processEppillin()
 
 void  clsServer::Run()
 {
-    while (true)
+    while (1)
     {
         int ready = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
         if (ready < 0)
@@ -266,7 +266,6 @@ void  clsServer::Run()
             perror("epoll_wait");
             break;
         }
-        std::cout << "hna 1" << std::endl;
 
         for (int i = 0; i < ready; ++i)
         {
@@ -298,11 +297,9 @@ void  clsServer::Run()
                     mapBuffers[fd].BufferRead.Buffer.append(chunk);
 
                     processEppillin();
-                    if ((mapBuffers[fd].BufferRead.isComplete == true && !mapBuffers[fd].BufferRead.RequestAtEnd.isRequestForCGI) )
+                    if (mapBuffers[fd].BufferRead.isComplete == true  )
                        // || (mapBuffers[fd].BufferRead.isComplete == true && mapBuffers[fd].BufferRead.RequestAtEnd.isRequestForCGI && mapBuffers[fd].BufferRead.finishExc))
                     {
-                        std::cout << "hna 2" << std::endl;
-
                         enable_epollout(fd);
                     }
                 }

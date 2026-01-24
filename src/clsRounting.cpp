@@ -160,7 +160,6 @@ MySpace::BufferRequest clsRounting::CheckRounting()
         // Check if redirect exists for this route
         if (route->redirect.size())
         {
-            std::cout << "hello drari" << std::endl;
             std::map<int, std::string>::const_iterator it = route->redirect.begin();
             
             _Buffer.BufferRead.RequestAtEnd.target = it->second;

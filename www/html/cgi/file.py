@@ -5,7 +5,7 @@ import time
 print("Content-Type: text/html")
 print("Status: 200 OK")
 print("Set-Cookie: session=abc123; HttpOnly")
-print()
+print("\r\n\r\n")
 
 
 def add(a, b):

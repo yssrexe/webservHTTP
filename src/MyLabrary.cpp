@@ -3,7 +3,8 @@
 #include <sstream>
 #include <ctime>
 #include <sys/time.h>
-
+ #include <sys/ioctl.h>
+ #include <unistd.h>
 
 
 
@@ -76,6 +77,28 @@ namespace MySpace
         return false;
     }
 
+    void EraseHearse(MySpace::BufferRequest& _Buffer)
+    {
+        _Buffer.BufferWrite.isfileOpen = true;
+
+        char buf[40096];
+        ssize_t bytesRead = read(_Buffer.BufferWrite.fd, buf, sizeof(buf));
+        if (bytesRead > 0)
+        {
+            buf[bytesRead] = '\0';
+            std::string temp(buf, bytesRead);
+            size_t posLine = temp.find("\r\n\r\n");
+            std::cout << "pos "<<posLine<< " bytread " << bytesRead << std::endl;
+            temp.erase(0, posLine + 4);
+            _Buffer.BufferWrite.Buffer.append(temp);
+        }
+        else 
+        {
+            close(_Buffer.BufferWrite.fd);
+            _Buffer.BufferWrite.isComplete = true;
+        }
+    }
+
     size_t getFileSize(const std::string& path)
     {
         struct stat st;
@@ -83,7 +106,15 @@ namespace MySpace
             return st.st_size;
         return 0;
     }
- 
+
+    size_t getPipeSize(int pipeFd)
+    {
+        int availableBytes = 0;
+        if (ioctl(pipeFd, FIONREAD, &availableBytes) == 0 && availableBytes > 0)
+            return static_cast<size_t>(availableBytes);
+        return 0;
+    }
+    
     bool endsWith(const std::string& str, const std::string& suffix)
     {
         if (str.length() < suffix.length())
