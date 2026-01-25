@@ -13,8 +13,8 @@ def add(a, b):
 
 print("<html><body>")
 print("<br>")
-time.sleep(5)
-print("hello Ayoub, Welcome to webserv project")
+time.sleep(15)
+print("hello yassir, Welcome to webserv project")
 print("<br>")
 print("\r\n", end='')
 print(f"your age is {add(10, 12)}")

@@ -54,6 +54,7 @@ namespace MySpace
         std::string target;                  // /index.html, /item/5
         std::string queryString;              // key1=value1&key2=value2
         std::string version;
+        std::string TargetCGI;
         Route route;
       
         std::map<std::string, std::string> headers;  // key: value

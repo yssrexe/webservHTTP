@@ -51,7 +51,10 @@ void clsResponse::sendchunks(const std::string path)
 {
     if (!_Buffer.BufferRead.isRouting || !_Buffer.BufferRead.isSendHeader)
         return;
-    //std::cout << "body   "<< _Buffer.BufferWrite.Buffer << std::endl;
+    if (_Buffer.BufferRead.RequestAtEnd.isRequestForCGI && !_Buffer.BufferRead.finishExc)
+        return;
+    
+    // std::cout << "body  iygv iugig " << std::endl;
     if (!_Buffer.BufferWrite.isfileOpen) 
     {
         _Buffer.BufferWrite.fd = open(path.c_str(), O_RDONLY);

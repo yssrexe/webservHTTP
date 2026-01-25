@@ -131,15 +131,15 @@ void clsRounting::checkRoutingForPost()
     _Buffer.BufferRead.isRouting = true;
     _Buffer.BufferRead.RequestAtEnd.route = *route;
 
-    // hna makhssekch t7et body file 
-    _Buffer.BufferRead.RequestAtEnd.target = "" + route->upload_dir + "/" + MySpace::generateUniqueFilename(_Buffer.BufferRead.Content_Type);
-
-    // std::cout << "Upload Path: " << _Buffer.BufferRead.RequestAtEnd.target << std::endl;
+    // hna makhssekch t7et body file
+    _Buffer.BufferRead.RequestAtEnd.route.upload_dir = "www/html/uploads";
+    _Buffer.BufferRead.RequestAtEnd.target = "" + _Buffer.BufferRead.RequestAtEnd.route.upload_dir + "/" + MySpace::generateUniqueFilename(_Buffer.BufferRead.Content_Type);
+     std::cout << "Upload Path: " << _Buffer.BufferRead.RequestAtEnd.target << std::endl;
 }
 
 MySpace::BufferRequest clsRounting::CheckRounting()
 {
-    if (_Buffer.type != MySpace::POSTE)
+    if (_Buffer.type != MySpace::POSTE || (_Buffer.type == MySpace::POSTE && _Buffer.BufferRead.RequestAtEnd.isRequestForCGI))
     {
      
         if (_Buffer.BufferRead.isRouting || !_Buffer.BufferRead.parsingLineAndHeader)
@@ -172,6 +172,9 @@ MySpace::BufferRequest clsRounting::CheckRounting()
         int Result =  _fileExists(_Buffer.BufferRead.RequestAtEnd.target,route);
         if (Result != HTTP_SUCCESS)
             throw Result;
+        if (_Buffer.type == MySpace::POSTE && _Buffer.BufferRead.RequestAtEnd.isRequestForCGI)
+            _Buffer.BufferRead.RequestAtEnd.TargetCGI = "" + route->upload_dir + "/" + MySpace::generateUniqueFilename(_Buffer.BufferRead.Content_Type);
+        
     }
     else
     {

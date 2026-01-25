@@ -161,7 +161,6 @@ namespace MySpace
             _Buffer.BufferWrite._headers += "Server: webserv/1.0\r\n";
             _Buffer.BufferWrite._headers += "Content-Type: " + _Buffer.BufferWrite.Content_Type + "\r\n";
             _Buffer.BufferWrite._headers += "Connection: " + _Buffer.BufferWrite.connection + "\r\n";
-            // std::cout << "pos "<<posLine<< " bytread " << bytesRead << std::endl;
             
             for (std::vector<std::string>::iterator it = _Buffer.BufferWrite.setHeaderCookie.begin(); it < _Buffer.BufferWrite.setHeaderCookie.end(); it++)
                 _Buffer.BufferWrite._headers += *it;

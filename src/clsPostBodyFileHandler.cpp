@@ -3,12 +3,13 @@
 
 void clsPostBodyFileHandler::sendRequestToTarget(std::string path)
 {
-
     if (!_Buffer.BufferRead.isfileOpen) 
     {
+        std::cout <<"path : " << path << std::endl;
         _Buffer.BufferRead.fd = open(path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
         if (_Buffer.BufferRead.fd < 0)
         {
+
             std::cout << "Failed to open file for upload: " <<_Buffer.BufferRead.fd << path  << std::endl;
             _Buffer.BufferRead.isComplete = true;
             return;
@@ -76,7 +77,10 @@ MySpace::BufferRequest clsPostBodyFileHandler::StreamToFileWriter()
         return _Buffer;
     if (_Buffer.BufferRead.isMultipart)
         EraseHeadersAndFirstBoundarie();
-    sendRequestToTarget(_Buffer.BufferRead.RequestAtEnd.target);
+    if (_Buffer.BufferRead.RequestAtEnd.isRequestForCGI)    
+        sendRequestToTarget(_Buffer.BufferRead.RequestAtEnd.TargetCGI);
+    else
+        sendRequestToTarget(_Buffer.BufferRead.RequestAtEnd.target);
     return _Buffer;
 }
 

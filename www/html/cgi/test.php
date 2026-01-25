@@ -16,7 +16,7 @@ if (!empty($_POST)) {
 }
 
 echo "<h2>Environment:</h2>";
-echo "<p>REQUEST_METHOD: " . $_SERVER['REQUEST_METHOD'] . "</p>";
+// echo "<p>REQUEST_METHOD: " . $_SERVER['REQUEST_METHOD'] . "</p>";
 echo "<p>CONTENT_LENGTH: " . ($_SERVER['CONTENT_LENGTH'] ?? '0') . "</p>";
 echo "<p>CONTENT_TYPE: " . ($_SERVER['CONTENT_TYPE'] ?? 'N/A') . "</p>";
 
