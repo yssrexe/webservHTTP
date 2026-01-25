@@ -202,24 +202,16 @@ void clsResponse::SendResponse()
     }
     else if (MySpace::CheckIsCGI(_Buffer))
     {
-        //Cgi cgi(_Buffer.BufferRead.RequestAtEnd,_fd_Clieant);
-        //ssize_t result;
         Cgi cgi(_Buffer.BufferRead.RequestAtEnd,0);
         switch (_Buffer.type)
         {
             case MySpace::GET:
             case MySpace::POSTE:
                 _Buffer = cgi.handleCgiRequest(_Buffer);
-                //std::cout << _Buffer.BufferRead.finishExc << std::endl;
                 if (_Buffer.BufferRead.finishExc)
                 {
-
                     MySpace::EraseHearse(_Buffer);
-                    _Buffer.BufferWrite.Content_Type = "text/html";
-
-                    //int ssize = MySpace::getPipeSize(_Buffer.BufferWrite.fd);
                     sendHeaderCGI();
-                    
                     sendchunks(_Buffer.BufferWrite.RequestAtEnd.target);
                     _Buffer.BufferWrite.isComplete = true;
                 }
