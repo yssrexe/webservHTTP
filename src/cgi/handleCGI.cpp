@@ -53,9 +53,7 @@ std::map<std::string, std::string> parseValue(std::string &line)
 
 void Cgi::SetEnv()
 {
-    //std::cout << "cout" << std::endl;
-     std::vector<std::string> tenv;
-     std::cout << "method : " << getMethod() << std::endl;
+    std::vector<std::string> tenv;
     tenv.push_back("REQUEST_METHOD=" + getMethod());
     tenv.push_back("SCRIPT_NAME=" + getTarget());
     tenv.push_back("SCRIPT_FILENAME=" + getScriptFileName(route , getTarget()));
@@ -109,7 +107,7 @@ void Cgi::CreateChild()
         close(pipe_in[1]);
         dup2(pipe_in[0], STDIN_FILENO);
         close(pipe_in[0]);
-        //close(pipe_out[0]);
+        close(pipe_out[0]);
         dup2(pipe_out[1], STDOUT_FILENO);
         close(pipe_out[1]);
 
@@ -175,13 +173,8 @@ MySpace::BufferRequest Cgi::handleCgiRequest(MySpace::BufferRequest buffer)
     route = buffer.BufferRead.RequestAtEnd.route;
     _Buffer = buffer;
 
-    std::cout << "path target : " << buffer.BufferRead.RequestAtEnd.target << std::endl;
-    std::cout << "file body target : " << buffer.BufferRead.RequestAtEnd.TargetCGI << std::endl;
-
     if (!_Buffer.BufferRead.CreateEnv)
     {
-        // here 
-       
         SetEnv();
         _Buffer.BufferRead.CreateEnv = true;
     }
@@ -189,8 +182,6 @@ MySpace::BufferRequest Cgi::handleCgiRequest(MySpace::BufferRequest buffer)
     if (!_Buffer.BufferRead.forked)
     {
         CreateChild();
-         std::time_t currentTime = std::time(NULL);
-        std::cout << "pid "<<pid << "[befor START] Time: " << std::ctime(&currentTime);
         _Buffer.BufferRead.forked = true;
         _Buffer.BufferRead._pid = pid;
         _Buffer.BufferRead.pipe_in_fd = pipe_in[1];
@@ -208,18 +199,10 @@ MySpace::BufferRequest Cgi::handleCgiRequest(MySpace::BufferRequest buffer)
     {
         if (WEXITSTATUS(statuspid) != 0)
             throw HTTP_INTERNAL_SERVER_ERROR;
-        
-        std::time_t endTime = std::time(NULL);
-        std::cout << "[CGI PROCESS END] PID: " << _Buffer.BufferRead._pid << ", Time: " << std::ctime(&endTime);
-
         _Buffer.BufferRead.finishExc = true;
         _Buffer.BufferRead.isComplete = true;
-        //here 
-        //std::cout << "dkhel 476" << std::endl;
         _Buffer.BufferWrite.isfileOpen = true;
         _Buffer.BufferWrite.fd = pipe_out[0]; // _Buffer.BufferWrite.fd
-        //std::cout << "fd send " << _Buffer.BufferWrite.fd << std::endl;
-
     }
     return _Buffer;
 }

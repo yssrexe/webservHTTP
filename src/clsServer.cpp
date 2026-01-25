@@ -297,10 +297,7 @@ void  clsServer::Run()
                         goto label;
 
                     if (!mapBuffers.count(fd))
-                    {
-                        std::cout << "inisilize buffer Client fd = " << fd << std::endl;
                         mapBuffers[fd] = initBuffer();
-                    }
                     mapBuffers[fd].BufferRead.Buffer.append(chunk);
 
                     processEppillin();
