@@ -88,7 +88,7 @@ namespace MySpace
             buf[bytesRead] = '\0';
             std::string temp(buf, bytesRead);
             size_t posLine = temp.find("\r\n\r\n");
-            //std::cout << "pos "<<posLine<< " bytread " << bytesRead << std::endl;
+            // std::cout << "pos "<<posLine<< " bytread " << bytesRead << std::endl;
             temp.erase(0, posLine + 4);
             _Buffer.BufferWrite.Buffer.append(temp);
         }

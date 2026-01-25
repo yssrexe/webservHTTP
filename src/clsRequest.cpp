@@ -151,7 +151,7 @@ MySpace::BufferRequest clsRequest::ParsingRequest()
     {
         case MySpace::GET:
             ParsingGetMethod();
-            //std::cout << _BufferRequest.BufferRead.RequestAtEnd.target << std::endl;
+            // std::cout << _BufferRequest.BufferRead.RequestAtEnd.target << std::endl;
             break;
         
         case MySpace::DELETE:
