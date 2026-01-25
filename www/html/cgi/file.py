@@ -13,7 +13,7 @@ def add(a, b):
 
 print("<html><body>")
 print("<br>")
-# time.sleep(5)
+time.sleep(5)
 print("hello Ayoub, Welcome to webserv project")
 print("<br>")
 print("\r\n", end='')

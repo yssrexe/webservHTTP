@@ -72,5 +72,4 @@ public:
 };
 
 ssize_t sendAll(int socket_fd, const char* data, size_t length);
-
 #endif

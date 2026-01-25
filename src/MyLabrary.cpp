@@ -1,6 +1,7 @@
 #include "../include/MyLabrary.hpp"
 #include <string>
 #include <sstream>
+#include "../include/cgi.hpp"
 #include <ctime>
 #include <sys/time.h>
  #include <sys/ioctl.h>
@@ -76,6 +77,35 @@ namespace MySpace
             return true;
         return false;
     }
+    static std::string intToString(int value)
+    {
+        std::stringstream ss;
+        ss << value;
+        return ss.str();
+    }
+
+    static std::map<std::string, std::string> parseValue(std::string &line)
+    {
+        std::map<std::string, std::string> result;
+        size_t pos = line.find(':');
+        if (pos != std::string::npos)
+        {
+            std::string key = line.substr(0, pos);
+            std::string value = line.substr(pos + 1);
+            
+            size_t start = value.find_first_not_of(" \t");
+            if (start != std::string::npos)
+                value = value.substr(start);
+            
+            size_t end = value.find_last_not_of(" \t\r\n");
+            if (end != std::string::npos)
+                value = value.substr(0, end + 1);
+            
+            result[key] = value;
+            line = key + ": " + value;
+        }
+        return result;
+    }
 
     void EraseHearse(MySpace::BufferRequest& _Buffer)
     {
@@ -85,10 +115,57 @@ namespace MySpace
         ssize_t bytesRead = read(_Buffer.BufferWrite.fd, buf, sizeof(buf));
         if (bytesRead > 0)
         {
+            
+
             buf[bytesRead] = '\0';
             std::string temp(buf, bytesRead);
             size_t posLine = temp.find("\r\n\r\n");
+            std::string headers = temp.substr(0, posLine);
+            std::vector<std::map<std::string, std::string> > collHead;
+            std::istringstream headerStream(headers);
+            std::string line;
+            while (std::getline(headerStream, line))
+            {
+                if (!line.empty() && line.find(':') != std::string::npos)
+                    collHead.push_back(parseValue(line));
+            }
+
+            for (size_t i = 0; i < collHead.size() ; i++)
+            {
+                std::map<std::string, std::string>::iterator it = collHead[i].begin();
+                if (it->first == "Content-Type")
+                    _Buffer.BufferWrite.Content_Type = it->second;
+                else if (it->first == "Status")
+                    _Buffer.BufferWrite.status = std::atoi(it->second.c_str());
+                else if (it->first == "Set-Cookie")
+                    _Buffer.BufferWrite.setHeaderCookie.push_back("Set-Cookie: " + it->second + "\r\n");
+                else if (it->first == "Connection")
+                    _Buffer.BufferWrite.connection = it->second;
+            }
+            std::string statusMessage;
+            switch (_Buffer.BufferWrite.status) {
+                case 200: statusMessage = "OK"; break;
+                case 201: statusMessage = "Created"; break;
+                case 204: statusMessage = "No Content"; break;
+                case 301: statusMessage = "Moved Permanently"; break;
+                case 302: statusMessage = "Found"; break;
+                case 400: statusMessage = "Bad Cgi"; break;
+                case 403: statusMessage = "Forbidden"; break;
+                case 404: statusMessage = "Not Found"; break;
+                case 500: statusMessage = "Internal Server Error"; break;
+                case 502: statusMessage = "Bad Gateway"; break;
+                default: statusMessage = "OK"; break;
+            }
+
+            _Buffer.BufferWrite._headers = _Buffer.BufferRead.RequestAtEnd.version + " " + intToString(_Buffer.BufferWrite.status) + " " + statusMessage + "\r\n";
+            _Buffer.BufferWrite._headers += "Server: webserv/1.0\r\n";
+            _Buffer.BufferWrite._headers += "Content-Type: " + _Buffer.BufferWrite.Content_Type + "\r\n";
+            _Buffer.BufferWrite._headers += "Connection: " + _Buffer.BufferWrite.connection + "\r\n";
             // std::cout << "pos "<<posLine<< " bytread " << bytesRead << std::endl;
+            
+            for (std::vector<std::string>::iterator it = _Buffer.BufferWrite.setHeaderCookie.begin(); it < _Buffer.BufferWrite.setHeaderCookie.end(); it++)
+                _Buffer.BufferWrite._headers += *it;
+            _Buffer.BufferWrite._headers += "\r\n";
             temp.erase(0, posLine + 4);
             _Buffer.BufferWrite.Buffer.append(temp);
         }

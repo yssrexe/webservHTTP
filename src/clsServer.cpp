@@ -164,7 +164,11 @@ MySpace::sData initData()
 {
     MySpace::sData Data;
 
+
     Data.ContentLength = 0;
+    Data.Content_Type = "text/html";
+    Data.connection = "close";
+    Data.status = 200;
     Data.isRouting = false;
     Data.fd = -1;
     Data.ofset = 0;

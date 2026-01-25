@@ -178,23 +178,13 @@ void clsResponse::sendRedirect(const std::string& redirectPath, int statusCode)
     _Buffer.BufferWrite.isComplete = true;
 }
 
-void clsResponse::sendHeaderCGI(size_t fileSize)
+void clsResponse::sendHeaderCGI()
 {
     if (_Buffer.BufferRead.isSendHeader)
         return;
 
-    _Buffer.BufferRead.ContentLength = fileSize;
     _Buffer.BufferRead.isSendHeader = true;
-    std::stringstream ss;
-    ss << fileSize;
-    std::string fileSizeStr = ss.str();
-    std::string header;
-    header += "HTTP/1.1 200 OK\r\n";
-    header += "Content-Type: " + _Buffer.BufferWrite.Content_Type + "\r\n";
-    header += "Transfer-Encoding: chunked";
-    header += "Connection: keep-alive\r\n";
-    header += "\r\n";
-    if(-1 == send(_fd_Clieant, header.c_str(), header.size(), 0))
+    if(-1 == send(_fd_Clieant, _Buffer.BufferWrite._headers.c_str(), _Buffer.BufferWrite._headers.size(), 0))
         _Buffer.BufferRead.isSendHeader = false;
 }
 
@@ -223,10 +213,12 @@ void clsResponse::SendResponse()
                 //std::cout << _Buffer.BufferRead.finishExc << std::endl;
                 if (_Buffer.BufferRead.finishExc)
                 {
+
                     MySpace::EraseHearse(_Buffer);
                     _Buffer.BufferWrite.Content_Type = "text/html";
+
                     //int ssize = MySpace::getPipeSize(_Buffer.BufferWrite.fd);
-                    sendHeaderCGI(0);
+                    sendHeaderCGI();
                     
                     sendchunks(_Buffer.BufferWrite.RequestAtEnd.target);
                     _Buffer.BufferWrite.isComplete = true;

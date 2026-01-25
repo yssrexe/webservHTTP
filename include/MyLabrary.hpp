@@ -62,6 +62,14 @@ namespace MySpace
 
     struct sData
     {
+        //response header
+        int status;
+        std::string connection;
+        std::vector<std::string> setHeaderCookie;
+        std::string Content_Type;
+        std::string _headers;
+
+
         bool isRouting;
         MySpace::eState sState;
         bool isMultipart;
@@ -70,7 +78,8 @@ namespace MySpace
         bool CreateEnv;
         size_t ofset;
         int fd;
-        std::string Content_Type;
+        
+        
         bool isComplete;
         bool isRedirection;
         int nbrRedirects;
@@ -86,6 +95,7 @@ namespace MySpace
         int pipe_out_fd;
         std::string boundaryEnd;
         bool isfileOpen;
+        
     };
     
 
