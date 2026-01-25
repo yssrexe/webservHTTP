@@ -196,4 +196,3 @@ void Cgi::clear()
 //     errorMessage = "";
 //     return true;
 // }
-

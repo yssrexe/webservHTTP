@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>POST Test</title>
+</head>
+<body>
+    <h1>CGI POST Test</h1>
+    
+    <h2>PHP Test</h2>
+    <form method="POST" action="/cgi/test.php">
+        <input type="text" name="name" value="John" placeholder="Name"><br><br>
+        <input type="text" name="age" value="25" placeholder="Age"><br><br>
+        <button type="submit">Submit to PHP</button>
+    </form>
+    
+    <hr>
+    
+    <h2>Python Test</h2>
+    <form method="POST" action="/cgi/test.py">
+        <input type="text" name="username" value="test" placeholder="Username"><br><br>
+        <input type="text" name="password" value="pass123" placeholder="Password"><br><br>
+        <button type="submit">Submit to Python</button>
+    </form>
+</body>
+</html>

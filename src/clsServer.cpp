@@ -239,8 +239,13 @@ void clsServer::processEppillin()
         mapBuffers[fd] = Rounting.CheckRounting();
         if (mapBuffers[fd].type == MySpace::POSTE)
         {
-            clsPostBodyFileHandler clsPostBodyFileHandler(mapBuffers[fd]);
-            mapBuffers[fd] = clsPostBodyFileHandler.StreamToFileWriter();
+            // Only handle file uploads for non-CGI POST requests
+            // CGI POST requests will have their body passed via stdin by the CGI handler
+            if (!mapBuffers[fd].BufferRead.RequestAtEnd.isRequestForCGI)
+            {
+                clsPostBodyFileHandler clsPostBodyFileHandler(mapBuffers[fd]);
+                mapBuffers[fd] = clsPostBodyFileHandler.StreamToFileWriter();
+            }
             if (mapBuffers[fd].BufferRead.isComplete)
                 enable_epollout(fd);
         }

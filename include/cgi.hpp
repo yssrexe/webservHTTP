@@ -44,6 +44,7 @@ public:
     // Getters
     void SetEnv();
     void CreateChild();
+    void WritePostBodyToPipe();
     std::string getMethod() const;
     std::string getTarget() const;
     std::string getQuerys() const;

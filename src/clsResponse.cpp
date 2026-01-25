@@ -51,7 +51,7 @@ void clsResponse::sendchunks(const std::string path)
 {
     if (!_Buffer.BufferRead.isRouting || !_Buffer.BufferRead.isSendHeader)
         return;
-    std::cout << "body   "<< _Buffer.BufferWrite.Buffer << std::endl;
+    //std::cout << "body   "<< _Buffer.BufferWrite.Buffer << std::endl;
     if (!_Buffer.BufferWrite.isfileOpen) 
     {
         _Buffer.BufferWrite.fd = open(path.c_str(), O_RDONLY);
@@ -132,7 +132,7 @@ void clsResponse::_performentDelete(std::string path)
     response << "\r\n";
     if (std::remove(path.c_str()) != 0)
         throw HTTP_INTERNAL_SERVER_ERROR;
-    
+
     if(send(_fd_Clieant, response.str().c_str(), response.str().size(), 0) <= 0)
         std::cout << "failded send in deleled "<< std::endl;
      _Buffer.BufferWrite.isComplete = true;
@@ -219,27 +219,22 @@ void clsResponse::SendResponse()
         switch (_Buffer.type)
         {
             case MySpace::GET:
-    
+            case MySpace::POSTE:
                 _Buffer = cgi.handleCgiRequest(_Buffer);
-                std::cout << _Buffer.BufferRead.finishExc << std::endl;
+                //std::cout << _Buffer.BufferRead.finishExc << std::endl;
                 if (_Buffer.BufferRead.finishExc)
                 {
                     MySpace::EraseHearse(_Buffer);
                     _Buffer.BufferWrite.Content_Type = "text/html";
-                    int ssize = MySpace::getPipeSize(_Buffer.BufferWrite.fd);
-                    std::cout << "size : " << ssize << std::endl;
+                    //int ssize = MySpace::getPipeSize(_Buffer.BufferWrite.fd);
                     sendHeaderCGI(0);
                     
                     sendchunks(_Buffer.BufferWrite.RequestAtEnd.target);
-                    _Buffer.BufferWrite.isComplete = true; // gheda chre7 liya hadi chno kadir
+                    _Buffer.BufferWrite.isComplete = true;
                 }
                 break;
             case MySpace::DELETE:
                 _performentDelete(_Buffer.BufferRead.RequestAtEnd.target);
-                break;
-             case MySpace::POSTE:
-                // Handle CGI POST request here (not implemented in this snippet)
-
                 break;
             case MySpace::UNKNOWN:
                 throw HTTP_BAD_REQUEST;
@@ -248,12 +243,9 @@ void clsResponse::SendResponse()
     }
     else if (_Buffer.BufferRead.isRouting && _Buffer.BufferRead.isComplete)
     {
-        // redirect response
-
         if (_Buffer.BufferRead.isRedirection)
         {
-            std::cout <<"after sendchunked " << _Buffer.BufferRead.RequestAtEnd.target << std::endl;
-
+            //std::cout <<"after sendchunked " << _Buffer.BufferRead.RequestAtEnd.target << std::endl;
             sendRedirect(_Buffer.BufferRead.RequestAtEnd.target,_Buffer.BufferRead.nbrRedirects);
         }
         else

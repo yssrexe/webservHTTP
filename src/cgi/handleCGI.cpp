@@ -1,4 +1,5 @@
 #include "../../include/cgi.hpp"
+#include <unistd.h>
 
 static std::string getFileNameURI(const std::string& path)
 {
@@ -51,7 +52,7 @@ std::map<std::string, std::string> parseValue(std::string &line)
 
 void Cgi::SetEnv()
 {
-    std::cout << "cout" << std::endl;
+    //std::cout << "cout" << std::endl;
      std::vector<std::string> tenv;
     tenv.push_back("REQUEST_METHOD=" + getMethod());
     tenv.push_back("SCRIPT_NAME=" + getTarget());
@@ -85,18 +86,20 @@ void Cgi::SetEnv()
         interpreter = "/usr/bin/php-cgi";
     else if (fExten == ".sh")
         interpreter = "/bin/bash";
-    else 
-        throw 500;
+    else
+        throw HTTP_INTERNAL_SERVER_ERROR;
+        
 
 }
 
 void Cgi::CreateChild()
 {
-     if (!pipe(pipe_in) == 0 || !pipe(pipe_out) == 0)
-        throw 500;
+    if (!pipe(pipe_in) == 0 || !pipe(pipe_out) == 0)
+        throw HTTP_INTERNAL_SERVER_ERROR;
     pid = fork();
     if (pid < 0)
-        throw 500;
+        throw HTTP_INTERNAL_SERVER_ERROR;
+        
     else if (pid == 0)
     {
         close(pipe_in[1]);
@@ -121,6 +124,47 @@ void Cgi::CreateChild()
 
 }
 
+void Cgi::WritePostBodyToPipe()
+{
+    if (_method != "POST" || !_Buffer.BufferRead.ContentLength)
+    {
+        close(pipe_in[1]);
+        return;
+    }
+
+    if (_Buffer.BufferRead.ContentLength > static_cast<size_t>(max_body_size))
+    {
+        close(pipe_in[1]);
+        throw HTTP_INTERNAL_SERVER_ERROR;
+    }
+
+    if (!_Buffer.BufferRead.Buffer.empty())
+    {
+        size_t remaining = _Buffer.BufferRead.ContentLength - _Buffer.BufferRead.ofset;
+        size_t writeSize = _Buffer.BufferRead.Buffer.size();
+        
+         if (writeSize > remaining)
+            writeSize = remaining;
+        
+        if (writeSize > 0)
+        {
+            ssize_t byteWrite = write(pipe_in[1], _Buffer.BufferRead.Buffer.data(), writeSize);
+            if (byteWrite < 0)
+            {
+                close(pipe_in[1]);
+                throw HTTP_INTERNAL_SERVER_ERROR;
+            }
+            _Buffer.BufferRead.ofset += byteWrite;
+            _Buffer.BufferRead.Buffer.erase(0, byteWrite);
+        }
+    }
+
+    if (_Buffer.BufferRead.ofset >= _Buffer.BufferRead.ContentLength)
+    {
+        close(pipe_in[1]);
+    }
+}
+
 MySpace::BufferRequest Cgi::handleCgiRequest(MySpace::BufferRequest buffer)
 {
     route = buffer.BufferRead.RequestAtEnd.route;
@@ -138,6 +182,7 @@ MySpace::BufferRequest Cgi::handleCgiRequest(MySpace::BufferRequest buffer)
         _Buffer.BufferRead._pid = pid;
         _Buffer.BufferRead.pipe_in_fd = pipe_in[1];
         _Buffer.BufferRead.pipe_out_fd = pipe_out[0];
+        WritePostBodyToPipe();
     }
     else
     {
@@ -149,14 +194,15 @@ MySpace::BufferRequest Cgi::handleCgiRequest(MySpace::BufferRequest buffer)
     if (waitResult > 0 && WIFEXITED(statuspid)) 
     {
         if (WEXITSTATUS(statuspid) != 0)
-            throw 500;
+            throw HTTP_INTERNAL_SERVER_ERROR;
         
+
         _Buffer.BufferRead.finishExc = true;
         _Buffer.BufferRead.isComplete = true;
-        std::cout << "dkhel 476" << std::endl;
+        //std::cout << "dkhel 476" << std::endl;
         _Buffer.BufferWrite.isfileOpen = true;
         _Buffer.BufferWrite.fd = pipe_out[0];
-        std::cout << "fd send " << _Buffer.BufferWrite.fd << std::endl;
+        //std::cout << "fd send " << _Buffer.BufferWrite.fd << std::endl;
 
     }
     return _Buffer;

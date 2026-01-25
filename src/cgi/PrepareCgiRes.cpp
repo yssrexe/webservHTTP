@@ -50,7 +50,8 @@ PrepareCgiRes::PrepareCgiRes(MySpace::BufferRequest _buffer)
     }
     
     if (byteRead < 0)
-        throw 500;
+        throw HTTP_INTERNAL_SERVER_ERROR;
+        
     
     close(pipe_out_fd);
     

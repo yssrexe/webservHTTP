@@ -131,7 +131,12 @@ void clsRounting::checkRoutingForPost()
     _Buffer.BufferRead.isRouting = true;
     _Buffer.BufferRead.RequestAtEnd.route = *route;
 
-    _Buffer.BufferRead.RequestAtEnd.target = "" + route->upload_dir + "/" + MySpace::generateUniqueFilename(_Buffer.BufferRead.Content_Type);
+    // Only generate upload filename for non-CGI POST requests (file uploads)
+    // For CGI POST requests, keep the original target path
+    if (!_Buffer.BufferRead.RequestAtEnd.isRequestForCGI)
+    {
+        _Buffer.BufferRead.RequestAtEnd.target = "" + route->upload_dir + "/" + MySpace::generateUniqueFilename(_Buffer.BufferRead.Content_Type);
+    }
 
     // std::cout << "Upload Path: " << _Buffer.BufferRead.RequestAtEnd.target << std::endl;
 }
