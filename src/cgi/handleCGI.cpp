@@ -1,6 +1,9 @@
 #include "../../include/cgi.hpp"
 #include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <ctime>
+#include <fcntl.h>
 
 static std::string getFileNameURI(const std::string& path)
 {
@@ -141,31 +144,48 @@ void Cgi::WritePostBodyToPipe()
         throw HTTP_INTERNAL_SERVER_ERROR;
     }
 
-    if (!_Buffer.BufferRead.Buffer.empty())
-    {
-        size_t remaining = _Buffer.BufferRead.ContentLength - _Buffer.BufferRead.ofset;
-        size_t writeSize = _Buffer.BufferRead.Buffer.size();
-        
-         if (writeSize > remaining)
-            writeSize = remaining;
-        
-        if (writeSize > 0)
-        {
-            ssize_t byteWrite = write(pipe_in[1], _Buffer.BufferRead.Buffer.data(), writeSize);
-            if (byteWrite < 0)
-            {
-                close(pipe_in[1]);
-                throw HTTP_INTERNAL_SERVER_ERROR;
-            }
-            _Buffer.BufferRead.ofset += byteWrite;
-            _Buffer.BufferRead.Buffer.erase(0, byteWrite);
-        }
-    }
-
-    if (_Buffer.BufferRead.ofset >= _Buffer.BufferRead.ContentLength)
+    std::string filePath = _Buffer.BufferRead.RequestAtEnd.TargetCGI;
+    int fd = open(filePath.c_str(), O_RDONLY);
+    if (fd < 0)
     {
         close(pipe_in[1]);
+        throw HTTP_INTERNAL_SERVER_ERROR;
     }
+
+    // Read from file and write to pipe
+    char buffer[8192];
+    ssize_t bytesRead;
+    size_t totalWritten = 0;
+
+    while ((bytesRead = read(fd, buffer, sizeof(buffer))) > 0)
+    {
+        if (totalWritten + bytesRead > _Buffer.BufferRead.ContentLength)
+        {
+            bytesRead = _Buffer.BufferRead.ContentLength - totalWritten;
+        }
+
+        ssize_t bytesWritten = write(pipe_in[1], buffer, bytesRead);
+        if (bytesWritten < 0)
+        {
+            close(fd);
+            close(pipe_in[1]);
+            throw HTTP_INTERNAL_SERVER_ERROR;
+        }
+        totalWritten += bytesWritten;
+        if (totalWritten >= _Buffer.BufferRead.ContentLength)
+            break;
+    }
+
+    if (bytesRead < 0)
+    {
+        close(fd);
+        close(pipe_in[1]);
+        throw HTTP_INTERNAL_SERVER_ERROR;
+    }
+
+    close(fd);
+    close(pipe_in[1]);
+    _Buffer.BufferRead.ofset = totalWritten;
 }
 
 MySpace::BufferRequest Cgi::handleCgiRequest(MySpace::BufferRequest buffer)

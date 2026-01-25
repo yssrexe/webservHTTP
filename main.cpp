@@ -24,7 +24,7 @@ int main(int argc, char **argv)
         if (!file.is_open())
             throw std::runtime_error("path of config file not valid");
         Servers serv(file);
-        
+        std::cout << "in parsing : " << serv.servers[0].routes[1].upload_dir << std::endl;
         //here we gunna start ...
         clsServer clsServers(serv.servers);
         // std::cout <<"rout path " << serv.servers[0].routes[0].rootPath << std::endl;
