@@ -131,8 +131,6 @@ void clsRounting::checkRoutingForPost()
     _Buffer.BufferRead.isRouting = true;
     _Buffer.BufferRead.RequestAtEnd.route = *route;
 
-    // hna makhssekch t7et body file
-    _Buffer.BufferRead.RequestAtEnd.route.upload_dir = "www/html/uploads";
     _Buffer.BufferRead.RequestAtEnd.target = "" + _Buffer.BufferRead.RequestAtEnd.route.upload_dir + "/" + MySpace::generateUniqueFilename(_Buffer.BufferRead.Content_Type);
 }
 

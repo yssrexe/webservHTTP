@@ -9,7 +9,6 @@ SOURCE =  	src/ConfigParser/Config.cpp src/ConfigParser/Route.cpp\
 			src/clsPostBodyFileHandler.cpp \
 			src/MyLabrary.cpp \
 			src/cgi/handleCGI.cpp \
-			src/cgi/PrepareCgiRes.cpp \
 			src/cgi/ParserCgi/RequestCgi.cpp 
 
 OBJ = $(SOURCE:.cpp=.o)

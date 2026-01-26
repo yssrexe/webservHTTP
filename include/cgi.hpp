@@ -31,6 +31,7 @@ private:
     std::string interpreter;
     MySpace::BufferRequest _Buffer;
     std::vector<char *> envp;
+    std::vector<std::string> env_strings;  // Store environment strings
     std::map<std::string, std::string> _headers;
 
     int pipe_in[2];
@@ -38,7 +39,7 @@ private:
 public:
     int _fd_client;
     std::string response;
-    Cgi(MySpace::DataRequestForGetDelete &Request, int fd_client);
+    Cgi(MySpace::DataRequestForGetDelete &Request, int fd_client, const Config& config);
     ~Cgi();
     
     // Getters

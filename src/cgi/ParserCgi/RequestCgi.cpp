@@ -7,8 +7,8 @@
     // std::string _bodyFilePath;
     // std::map<std::string, std::string> _headers;
 
-Cgi::Cgi(MySpace::DataRequestForGetDelete &Request, int fd_client)
-    : _method(Request.method), _target(Request.target), _querys(Request.queryString), 
+Cgi::Cgi(MySpace::DataRequestForGetDelete &Request, int fd_client, const Config& config)
+    : Config(config), _method(Request.method), _target(Request.target), _querys(Request.queryString), 
       _version(Request.version), _bodyFilePath(""), _headers(Request.headers), _fd_client(fd_client)
       {
 

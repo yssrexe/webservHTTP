@@ -205,7 +205,7 @@ void clsResponse::SendResponse()
     }
     else if (MySpace::CheckIsCGI(_Buffer))
     {
-        Cgi cgi(_Buffer.BufferRead.RequestAtEnd,0);
+        Cgi cgi(_Buffer.BufferRead.RequestAtEnd, 0, _ConfigServer);
         switch (_Buffer.type)
         {
             case MySpace::GET:

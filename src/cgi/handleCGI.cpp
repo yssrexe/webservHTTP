@@ -56,24 +56,25 @@ std::map<std::string, std::string> parseValue(std::string &line)
 
 void Cgi::SetEnv()
 {
-    std::vector<std::string> tenv;
-    tenv.push_back("REQUEST_METHOD=" + getMethod());
-    tenv.push_back("SCRIPT_NAME=" + getTarget());
-    tenv.push_back("SCRIPT_FILENAME=" + getScriptFileName(route , getTarget()));
-    tenv.push_back("QUERY_STRING=" + getQuerys());
-    tenv.push_back("CONTENT_LENGTH=" + getHeader("content-length"));
-    tenv.push_back("CONTENT_TYPE=" + getHeader("content-type"));
-    tenv.push_back("SERVER_PROTOCOL=" + getVersion());
-    tenv.push_back("SERVER_NAME=" + (!server_names.empty() ? server_names[0] : "localhost"));
-    tenv.push_back("SERVER_PORT=" + intToString(!ports.empty() ? ports[0] : 80));
-    tenv.push_back("REMOTE_ADDR=127.0.0.1");
-    tenv.push_back("REQUEST_URI=" + getTarget() + (getQuerys().empty() ? "" : "?" + getQuerys()));
-    tenv.push_back("HTTP_HOST=" + getHeader("host"));
-    tenv.push_back("HTTP_USER_AGENT=" + getHeader("user-agent"));
-    tenv.push_back("HTTP_COOKIE=" + getHeader("cookie"));
-    tenv.push_back("REDIRECT_STATUS=200");
+    env_strings.clear();
+    env_strings.push_back("REQUEST_METHOD=" + getMethod());
+    env_strings.push_back("SCRIPT_NAME=" + getTarget());
+    env_strings.push_back("SCRIPT_FILENAME=" + getScriptFileName(route , getTarget()));
+    env_strings.push_back("QUERY_STRING=" + getQuerys());
+    env_strings.push_back("CONTENT_LENGTH=" + getHeader("Content-length"));
+    env_strings.push_back("CONTENT_TYPE=" + getHeader("Content-Type"));
+    env_strings.push_back("SERVER_PROTOCOL=" + getVersion());
+    env_strings.push_back("SERVER_NAME=" + (!server_names.empty() ? server_names[0] : "localhost"));
+    env_strings.push_back("SERVER_PORT=" + intToString(!ports.empty() ? ports[0] : 80));
+    env_strings.push_back("REMOTE_ADDR=127.0.0.1");
+    env_strings.push_back("REQUEST_URI=" + getTarget() + (getQuerys().empty() ? "" : "?" + getQuerys()));
+    env_strings.push_back("HTTP_HOST=" + getHeader("host"));
+    env_strings.push_back("HTTP_USER_AGENT=" + getHeader("user-agent"));
+    env_strings.push_back("HTTP_COOKIE=" + getHeader("cookie"));
+    env_strings.push_back("REDIRECT_STATUS=200");
     
-    for (std::vector<std::string>::const_iterator it = tenv.begin(); it != tenv.end(); it++)
+    envp.clear(); 
+    for (std::vector<std::string>::iterator it = env_strings.begin(); it != env_strings.end(); it++)
     {
         envp.push_back(const_cast<char *>(it->c_str()));
     }
