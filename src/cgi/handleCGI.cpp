@@ -62,7 +62,7 @@ void Cgi::SetEnv()
     env_strings.push_back("SCRIPT_FILENAME=" + getScriptFileName(route , getTarget()));
     env_strings.push_back("QUERY_STRING=" + getQuerys());
     env_strings.push_back("CONTENT_LENGTH=" + getHeader("Content-length"));
-    env_strings.push_back("CONTENT_TYPE=" + getHeader("Content-Type"));
+    env_strings.push_back("CONTENT_TYPE=" + _Buffer.BufferWrite.Content_Type);
     env_strings.push_back("SERVER_PROTOCOL=" + getVersion());
     env_strings.push_back("SERVER_NAME=" + (!server_names.empty() ? server_names[0] : "localhost"));
     env_strings.push_back("SERVER_PORT=" + intToString(!ports.empty() ? ports[0] : 80));
