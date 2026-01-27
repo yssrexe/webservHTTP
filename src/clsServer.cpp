@@ -297,7 +297,9 @@ void  clsServer::Run()
                         goto label;
 
                     if (!mapBuffers.count(fd))
+                    {
                         mapBuffers[fd] = initBuffer();
+                    }
                     mapBuffers[fd].BufferRead.Buffer.append(chunk);
 
                     processEppillin();

@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include "MyLabrary.hpp"
+#include "clsServer.hpp"
 
 class Cgi : public Config
 {

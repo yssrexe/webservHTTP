@@ -5,7 +5,7 @@ import sys
 # Print HTTP headers
 print("Content-Type: text/html")
 print("Status: 200 OK")
-print("Set-Cookie: session=abc145523; HttpOnly")
+print("Set-Cookie: session=abc145523; HttpOnly; theme=dark")
 print("\r\n\r\n")
 
 

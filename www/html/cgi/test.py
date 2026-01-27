@@ -9,7 +9,7 @@ post_data = sys.stdin.read(content_length) if content_length > 0 else ""
 
 # Output
 print("Content-Type: text/html")
-print()
+print("\r\n\r\n")
 print("<h1>Python POST Result</h1>")
 print("<h2>POST Data:</h2>")
 

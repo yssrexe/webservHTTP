@@ -15,6 +15,7 @@ bool parseConFileName(std::string fileName)
 
 int main(int argc, char **argv)
 {
+    signal(SIGPIPE, SIG_IGN);
     try
     {
         std::string filePath = (argc > 1) ? argv[1] : "webserv.conf";
@@ -28,7 +29,6 @@ int main(int argc, char **argv)
         clsServer clsServers(serv.servers);
         // std::cout <<"rout path " << serv.servers[0].routes[0].rootPath << std::endl;
         clsServers.Run();
-        
     }
     catch(const std::exception& e)
     {

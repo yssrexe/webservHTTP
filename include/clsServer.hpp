@@ -21,7 +21,6 @@
 const int MAX_EVENTS = 64;
 
 
-
 class clsServer
 {
 private:
