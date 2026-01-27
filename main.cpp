@@ -15,7 +15,6 @@ bool parseConFileName(std::string fileName)
 
 int main(int argc, char **argv)
 {
-    signal(SIGPIPE, SIG_IGN);
     try
     {
         std::string filePath = (argc > 1) ? argv[1] : "webserv.conf";

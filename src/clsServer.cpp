@@ -262,6 +262,7 @@ void clsServer::processEppillin()
 
 void  clsServer::Run()
 {
+    signal(SIGPIPE, SIG_IGN);
     while (1)
     {
         int ready = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
