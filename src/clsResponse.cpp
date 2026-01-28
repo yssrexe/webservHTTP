@@ -133,7 +133,7 @@ void clsResponse::_performentDelete(std::string path)
     response << "Content-Length: " << 0 << "\r\n";
     response << "Connection: close\r\n";
     response << "\r\n";
-    std::cout << "delete path : " << path << std::endl;
+
     if (std::remove(path.c_str()) != 0)
         throw HTTP_INTERNAL_SERVER_ERROR;
     if(send(_fd_Clieant, response.str().c_str(), response.str().size(), 0) <= 0)
