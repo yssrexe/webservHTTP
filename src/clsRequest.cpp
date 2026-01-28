@@ -63,22 +63,6 @@ clsRequest::clsRequest(MySpace::BufferRequest& BufferRequest) : _BufferRequest(B
 
 }
 
-std::string clsRequest::GetContentType(std::string& Buffer)
-{
-    std::size_t pos = Buffer.find("\r\n\r\n");
-    if (pos == std::string::npos)
-        return "";
-    std::string metadata = Buffer.substr(0, pos);
-    size_t contentTypePos = metadata.find("Content-Type: ");
-    if (contentTypePos == std::string::npos)
-        return "";
-    size_t start = contentTypePos + 13;
-    size_t end = metadata.find("\r\n", start);
-    if (end == std::string::npos)
-        end = metadata.length();
-    return metadata.substr(start, end - start);
-}
-
 void clsRequest::_ParsingLine(std::string Line)
 {
     std::vector<std::string> SLine = MySpace::_Split(Line,' ');
@@ -117,9 +101,7 @@ void clsRequest::ParsingGetMethod()
     _BufferRequest.BufferRead.boundary = "--" + MySpace::extractBoundary(_BufferRequest.BufferRead.Content_Type);
     _BufferRequest.BufferRead.boundaryEnd = _BufferRequest.BufferRead.boundary + "--";
     _BufferRequest.BufferRead.isMultipart = MySpace::isMultipartRequest(_BufferRequest.BufferRead.Content_Type);
-    if (_BufferRequest.BufferRead.isMultipart)
-        _BufferRequest.BufferRead.Content_Type = GetContentType(_BufferRequest.BufferRead.Buffer);
-    
+ 
     _BufferRequest.BufferRead.parsingLineAndHeader = true;
     if (_BufferRequest.type == MySpace::GET || _BufferRequest.type == MySpace::DELETE)
     {

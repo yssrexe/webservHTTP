@@ -204,6 +204,10 @@ void clsResponse::SendResponse()
         send(_fd_Clieant, response.c_str(), response.size(), 0);
 
     }
+    else  if (_Buffer.BufferRead.isRedirection)
+    {
+        sendRedirect(_Buffer.BufferRead.RequestAtEnd.target,_Buffer.BufferRead.nbrRedirects);
+    }
     else if (MySpace::CheckIsCGI(_Buffer))
     {
         Cgi cgi(_Buffer.BufferRead.RequestAtEnd, 0, _ConfigServer);
@@ -230,30 +234,23 @@ void clsResponse::SendResponse()
     }
     else if (_Buffer.BufferRead.isRouting && _Buffer.BufferRead.isComplete)
     {
-        if (_Buffer.BufferRead.isRedirection)
+        switch (_Buffer.type)
         {
-            //std::cout <<"after sendchunked " << _Buffer.BufferRead.RequestAtEnd.target << std::endl;
-            sendRedirect(_Buffer.BufferRead.RequestAtEnd.target,_Buffer.BufferRead.nbrRedirects);
-        }
-        else
-        {
-            switch (_Buffer.type)
-            {
-                case MySpace::GET:
-                    sendHeader(_Buffer.BufferRead.RequestAtEnd.target);
-                    sendchunks(_Buffer.BufferRead.RequestAtEnd.target);
-                    break;
-                case MySpace::DELETE:
-                    _performentDelete(_Buffer.BufferRead.RequestAtEnd.target);
-                    break;
-                case MySpace::POSTE:
-                    _performentPost();
-                    _Buffer.BufferWrite.isComplete = true;
-                    break;
-                case MySpace::UNKNOWN:
-                    throw HTTP_BAD_REQUEST;
-                    break;
-            }
+            case MySpace::GET:
+                sendHeader(_Buffer.BufferRead.RequestAtEnd.target);
+                sendchunks(_Buffer.BufferRead.RequestAtEnd.target);
+                break;
+            case MySpace::DELETE:
+                _performentDelete(_Buffer.BufferRead.RequestAtEnd.target);
+                break;
+            case MySpace::POSTE:
+                _performentPost();
+                _Buffer.BufferWrite.isComplete = true;
+                break;
+            case MySpace::UNKNOWN:
+                throw HTTP_BAD_REQUEST;
+                break;
+        
         }
     }
 }

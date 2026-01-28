@@ -33,7 +33,6 @@ private:
     void ParsingGetMethod();
     void ParsingDeleteRequest();
     void ParsingPosteRequest();
-    std::string GetContentType(std::string& Buffer);
     bool openedTarget();
     void sendRequestToTarget(std::string path);
 

@@ -99,7 +99,7 @@ void Cgi::SetEnv()
 
 void Cgi::CreateChild()
 {
-    if (!pipe(pipe_in) == 0 || !pipe(pipe_out) == 0)
+    if (pipe(pipe_in) == -1 || pipe(pipe_out) == -1)
         throw HTTP_INTERNAL_SERVER_ERROR;
     pid = fork();
     if (pid < 0)

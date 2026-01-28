@@ -241,6 +241,7 @@ void clsServer::processEppillin()
 
         clsRounting Rounting(mapBuffers[fd],mapServers[clientToServer[fd]]);
         mapBuffers[fd] = Rounting.CheckRounting();
+        
         if (mapBuffers[fd].type == MySpace::POSTE)
         {
             clsPostBodyFileHandler clsPostBodyFileHandler(mapBuffers[fd]);
@@ -305,7 +306,6 @@ void  clsServer::Run()
 
                     processEppillin();
                     if (mapBuffers[fd].BufferRead.isComplete == true  )
-                       // || (mapBuffers[fd].BufferRead.isComplete == true && mapBuffers[fd].BufferRead.RequestAtEnd.isRequestForCGI && mapBuffers[fd].BufferRead.finishExc))
                     {
                         enable_epollout(fd);
                     }

@@ -1,5 +1,5 @@
 CPP = c++
-FLAGS = -Wall -Wextra -Werror -std=c++98
+FLAGS = 
 SOURCE =  	src/ConfigParser/Config.cpp src/ConfigParser/Route.cpp\
 			main.cpp  \
 			src/clsServer.cpp \

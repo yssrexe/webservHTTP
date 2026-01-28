@@ -125,6 +125,8 @@ namespace MySpace
     
     size_t      getFileSize(const std::string& path);
 
+    std::string GetContentType(std::string& Buffer);
+
     bool endsWith(const std::string& str, const std::string& suffix);
 
     std::string getFirstWord(const std::string& s);

@@ -3,6 +3,8 @@
 
 void clsPostBodyFileHandler::sendRequestToTarget(std::string path)
 {
+    if (_Buffer.BufferRead.isRouting == false)
+        return;
     if (!_Buffer.BufferRead.isfileOpen) 
     {
         _Buffer.BufferRead.fd = open(path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -64,6 +66,7 @@ void clsPostBodyFileHandler::EraseHeadersAndFirstBoundarie()
     size_t pos = _Buffer.BufferRead.Buffer.find("\r\n\r\n");
     if (pos != std::string::npos)
     {
+        _Buffer.BufferRead.Content_Type = MySpace::GetContentType(_Buffer.BufferRead.Buffer);
         _Buffer.BufferRead.Buffer.erase(0, pos + 4);
         _Buffer.BufferRead.eraseHeadersDone = true;
     }

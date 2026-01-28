@@ -114,7 +114,7 @@ const Route* clsRounting::_findRoute(const std::string& target)
 
 void clsRounting::checkRoutingForPost()
 {
-    if (_Buffer.BufferRead.isRouting)
+    if (_Buffer.BufferRead.isRouting || (_Buffer.BufferRead.isMultipart && !_Buffer.BufferRead.eraseHeadersDone))
         return;
 
     if (!_isMethodAllowed(_Buffer.BufferRead.RequestAtEnd.method, _server.allowed_methods))
@@ -130,7 +130,7 @@ void clsRounting::checkRoutingForPost()
 
     _Buffer.BufferRead.isRouting = true;
     _Buffer.BufferRead.RequestAtEnd.route = *route;
-
+    std::cout << "rounting correct for post " << std::endl;
     _Buffer.BufferRead.RequestAtEnd.target = "" + _Buffer.BufferRead.RequestAtEnd.route.upload_dir + "/" + MySpace::generateUniqueFilename(_Buffer.BufferRead.Content_Type);
 }
 
@@ -145,7 +145,6 @@ MySpace::BufferRequest clsRounting::CheckRounting()
         _Buffer.BufferRead.isRouting = true;
         if (!_isMethodAllowed(_Buffer.BufferRead.RequestAtEnd.method, _server.allowed_methods))
             throw HTTP_METHOD_NOT_ALLOWED;
-
         const Route* route = _findRoute(_Buffer.BufferRead.RequestAtEnd.target);
         if (!route)
             throw HTTP_NOT_FOUND;
@@ -155,7 +154,6 @@ MySpace::BufferRequest clsRounting::CheckRounting()
         
         _Buffer.BufferRead.RequestAtEnd.route = *route;
         
-        // Check if redirect exists for this route
         if (route->redirect.size())
         {
             std::map<int, std::string>::const_iterator it = route->redirect.begin();

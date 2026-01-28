@@ -1,0 +1,1 @@
+1) we should  check is roote and all path is already exict 

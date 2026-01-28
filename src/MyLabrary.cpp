@@ -107,6 +107,22 @@ namespace MySpace
         return result;
     }
 
+    std::string GetContentType(std::string& Buffer)
+    {
+        std::size_t pos = Buffer.find("\r\n\r\n");
+        if (pos == std::string::npos)
+            return "";
+        std::string metadata = Buffer.substr(0, pos);
+        size_t contentTypePos = metadata.find("Content-Type: ");
+        if (contentTypePos == std::string::npos)
+            return "";
+        size_t start = contentTypePos + 13;
+        size_t end = metadata.find("\r\n", start);
+        if (end == std::string::npos)
+            end = metadata.length();
+        return metadata.substr(start, end - start);
+    }
+
     void EraseHearse(MySpace::BufferRequest& _Buffer)
     {
         _Buffer.BufferWrite.isfileOpen = true;
@@ -357,7 +373,6 @@ std::string MySpace::generateUniqueFilename(const std::string& contentType)
 {
     struct timeval tv;
     gettimeofday(&tv, NULL);
-    
     std::stringstream ss;
     ss << "upload_" << tv.tv_sec << "_" << tv.tv_usec;
     
@@ -384,7 +399,6 @@ std::string MySpace::generateUniqueFilename(const std::string& contentType)
         extension = ".json";
     else if (contentType.find("application/xml") != std::string::npos)
         extension = ".xml";
-    
     ss << extension;
     return ss.str();
 }

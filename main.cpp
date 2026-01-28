@@ -25,8 +25,9 @@ int main(int argc, char **argv)
             throw std::runtime_error("path of config file not valid");
         Servers serv(file);
         //here we gunna start ...
+        std::cout << "Config file parsed successfully. Starting server..." << std::endl;
         clsServer clsServers(serv.servers);
-        std::map<int, std::string>::iterator it = serv.servers[0].routes[3].redirect.begin();
+        std::map<int, std::string>::iterator it = serv.servers[0].routes[1].redirect.begin();
         std::cout <<"redirect : " << it->second << std::endl;
         clsServers.Run();
     }
