@@ -26,7 +26,8 @@ int main(int argc, char **argv)
         Servers serv(file);
         //here we gunna start ...
         clsServer clsServers(serv.servers);
-        // std::cout <<"rout path " << serv.servers[0].routes[0].rootPath << std::endl;
+        std::map<int, std::string>::iterator it = serv.servers[0].routes[3].redirect.begin();
+        std::cout <<"redirect : " << it->second << std::endl;
         clsServers.Run();
     }
     catch(const std::exception& e)

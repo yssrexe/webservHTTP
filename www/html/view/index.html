@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Navbar Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .navbar {
+            background-color: #333;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .navbar form {
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar button {
+            background-color: #555;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar button:hover {
+            background-color: #777;
+        }
+
+        .navbar button:active {
+            background-color: #999;
+        }
+
+        .content {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <form action="/" method="get">
+            <input type="hidden" name="page" value="home">
+            <button type="submit">Home</button>
+        </form>
+        <form action="/cgi/file.py" method="get">
+            <button type="submit">CGI</button>
+        </form>
+        <form action="/cgi/file.py" method="get">
+            <button type="submit">Test Cookies</button>
+        </form>
+        <form action="/cgi/file.py" method="get" >
+            <button type="submit">session managment</button>
+        </form>
+        <form action="/uploadTest.html" method="get">
+            <button type="submit">Upload</button>
+        </form>
+        <form action="/cgi/file.py" method="get">
+            <button type="submit">Delete</button>
+        </form>
+    </nav>
+
+    <div class="content">
+        <h1>Welcome to My Website</h1>
+        <p>This is a simple HTML page with a navbar containing 6 buttons. Click any button in the navigation bar above to see an interaction!</p>
+        <p>Feel free to customize the styles and functionality to suit your needs.</p>
+    </div>
+</body>
+</html>

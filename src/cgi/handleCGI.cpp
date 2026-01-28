@@ -154,7 +154,6 @@ void Cgi::WritePostBodyToPipe()
         throw HTTP_INTERNAL_SERVER_ERROR;
     }
 
-    // Read from file and write to pipe
     char buffer[8192];
     ssize_t bytesRead;
     size_t totalWritten = 0;

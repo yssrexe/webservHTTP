@@ -137,7 +137,7 @@ namespace MySpace
                     _Buffer.BufferWrite.Content_Type = it->second;
                 else if (it->first == "Status")
                     _Buffer.BufferWrite.status = std::atoi(it->second.c_str());
-                else if (it->first == "Set-Cookie")
+                else if (it->first == "Cookie")
                     _Buffer.BufferWrite.setHeaderCookie.push_back("Set-Cookie: " + it->second + "\r\n");
                 else if (it->first == "Connection")
                     _Buffer.BufferWrite.connection = it->second;
