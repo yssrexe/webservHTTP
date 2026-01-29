@@ -78,6 +78,7 @@ namespace MySpace
         size_t ContentLength;
         bool CreateEnv;
         size_t ofset;
+        size_t bodyBytesProcessed;
         int fd;
         
         

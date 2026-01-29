@@ -184,6 +184,7 @@ MySpace::sData initData()
     Data.forked = false;
     Data.isRedirection = false;
     Data.finishExc = false;
+    Data.bodyBytesProcessed = 0;
     return Data;
 }
 

@@ -21,12 +21,25 @@ void clsPostBodyFileHandler::sendRequestToTarget(std::string path)
     
     while(!_Buffer.BufferRead.Buffer.empty()) 
     {
-        size_t dataSize = _Buffer.BufferRead.Buffer.size(); 
+        size_t originalSize = _Buffer.BufferRead.Buffer.size();
+        size_t dataSize = originalSize;
+        size_t trimmedAway = 0;
+
         if (_Buffer.BufferRead.isMultipart)
+        {
             _Buffer = MySpace::trimBoundaryFromBuffer(dataSize, _Buffer);
-        
+            size_t afterTrimSize = _Buffer.BufferRead.Buffer.size();
+            if (originalSize >= afterTrimSize)
+                trimmedAway = originalSize - afterTrimSize;
+        }
+
         if (dataSize == 0)
+        {
+            if (trimmedAway > 0)
+                _Buffer.BufferRead.bodyBytesProcessed += trimmedAway;
             break;
+        }
+
         const char* data = _Buffer.BufferRead.Buffer.data();
         ssize_t written = write(_Buffer.BufferRead.fd, data, dataSize);
         if (written < 0) 
@@ -36,10 +49,22 @@ void clsPostBodyFileHandler::sendRequestToTarget(std::string path)
             return;
         }
         _Buffer.BufferRead.ofset += written;
+        _Buffer.BufferRead.bodyBytesProcessed += (trimmedAway + written);
         _Buffer.BufferRead.Buffer.erase(0, written);
     }
+
+    if (_Buffer.BufferRead.isMultipart && !_Buffer.BufferRead.isComplete && _Buffer.BufferRead.ContentLength > 0)
+    {
+        size_t pending = _Buffer.BufferRead.Buffer.size();
+        if (_Buffer.BufferRead.bodyBytesProcessed + pending >= _Buffer.BufferRead.ContentLength)
+        {
+            _Buffer.BufferRead.bodyBytesProcessed += pending;
+            _Buffer.BufferRead.Buffer.clear();
+            _Buffer.BufferRead.isComplete = true;
+        }
+    }
     
-    if (_Buffer.BufferRead.ofset >= _Buffer.BufferRead.ContentLength || _Buffer.BufferRead.isComplete)
+    if ((_Buffer.BufferRead.ContentLength > 0 && _Buffer.BufferRead.bodyBytesProcessed >= _Buffer.BufferRead.ContentLength) || _Buffer.BufferRead.isComplete)
     {
         close(_Buffer.BufferRead.fd);
         _Buffer.BufferRead.isComplete = true;
