@@ -27,8 +27,6 @@ int main(int argc, char **argv)
         //here we gunna start ...
         std::cout << "Config file parsed successfully. Starting server..." << std::endl;
         clsServer clsServers(serv.servers);
-        std::map<int, std::string>::iterator it = serv.servers[0].routes[1].redirect.begin();
-        std::cout <<"redirect : " << it->second << std::endl;
         clsServers.Run();
     }
     catch(const std::exception& e)

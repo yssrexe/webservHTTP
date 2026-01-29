@@ -130,7 +130,6 @@ void clsRounting::checkRoutingForPost()
 
     _Buffer.BufferRead.isRouting = true;
     _Buffer.BufferRead.RequestAtEnd.route = *route;
-    std::cout << "rounting correct for post " << std::endl;
     _Buffer.BufferRead.RequestAtEnd.target = "" + _Buffer.BufferRead.RequestAtEnd.route.upload_dir + "/" + MySpace::generateUniqueFilename(_Buffer.BufferRead.Content_Type);
 }
 
