@@ -1,0 +1,8 @@
+1 ) Configuration parsing error: It is not allowed to have two servers with the same configuration.
+2 ) Invalid route: A route must have at least one allowed HTTP method.
+4 ) Invalid server: A server must define at least one allowed HTTP method.
+5 ) Required body size: A maximum body size must be defined.
+6 ) Required error page: An error page must be configured.
+7 ) POST method requirement: If the POST method is allowed, an upload directory (dir_uploads) must be defined.
+8 ) Root path requirement: Each route must have a root path.
+10)  Invalid configuration: Any missing required directive should result in an error like all http status code .
