@@ -24,6 +24,7 @@ int main(int argc, char **argv)
         if (!file.is_open())
             throw std::runtime_error("path of config file not valid");
         Servers serv(file);
+        serv.checkServers();
         //here we gunna start ...
         std::cout << "Config file parsed successfully. Starting server..." << std::endl;
         clsServer clsServers(serv.servers);

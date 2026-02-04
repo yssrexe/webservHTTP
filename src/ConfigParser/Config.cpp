@@ -1,5 +1,6 @@
 #include "../../include/Config.hpp"
 #include "../../include/Route.hpp"
+#include <algorithm>
 
 
 
@@ -82,6 +83,37 @@ Servers::Servers(std::istream &file)
         
 }
 
+void Servers::checkServers()
+{
+    for (size_t it = 0; it < servers.size(); it++)
+    {
+        for (size_t it2 = it + 1; it2 < servers.size(); it2++)
+        {
+            if ((servers[it].ports == servers[it2].ports) && (servers[it].host == servers[it2].host))
+                throw std::runtime_error("Config file : Address already is used");
+        }
+
+        Config &srv = servers[it];
+        if (srv.allowed_methods.empty())
+            throw std::runtime_error("Invalid server: at least one allowed HTTP method is required");
+        if (srv.max_body_size <= 0)
+            throw std::runtime_error("Invalid server: max_body_size directive is required");
+        if (srv.error_pages.empty())
+            throw std::runtime_error("Invalid server: error_pages directive is required");
+
+        for (size_t iRoute = 0; iRoute < srv.routes.size(); iRoute++)
+        {
+            Route &rt = srv.routes[iRoute];
+            if (rt.allowed_methods.empty())
+                throw std::runtime_error("Invalid route: at least one allowed HTTP method is required");
+            if (rt.rootPath.empty())
+                throw std::runtime_error("Invalid route: root path directive is required");
+            if (std::find(rt.allowed_methods.begin(), rt.allowed_methods.end(), "POST") != rt.allowed_methods.end() && rt.upload_dir.empty())
+                throw std::runtime_error("Invalid route: POST method allowed but upload directory is not defined");
+        }
+    }
+    
+}
 std::vector<std::string> ft_Csplite(std::string &value, char c)
 {
     std::stringstream ss(value);
@@ -95,11 +127,11 @@ std::vector<std::string> ft_Csplite(std::string &value, char c)
     return params;
 }
 
-Config::Config()
+Config::Config(): max_body_size(-1)
 {
 }
 
-Config::Config(std::string &lines, int numLines)
+Config::Config(std::string &lines, int numLines): max_body_size(-1)
 {
     std::stringstream ss(lines);
     std::string line;

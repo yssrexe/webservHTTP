@@ -16,6 +16,7 @@ public:
     int lineNumber;
     std::vector<Config> servers;
     Servers(std::istream &file);
+    void checkServers();
 };
 
 class Config

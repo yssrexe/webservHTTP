@@ -90,7 +90,7 @@ void Route::insertAllowedMethods(std::string &allowedMethods)
     while (std::getline(ss, word, '-'))
     {
         if (word != "POST" && word != "DELETE" && word != "GET")
-            throw std::runtime_error(word + "methods not valid");
+            throw std::runtime_error(word + " methods not valid");
         else
             this->allowed_methods.push_back(word);
     }
