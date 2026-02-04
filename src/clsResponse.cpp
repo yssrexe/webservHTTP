@@ -1,6 +1,6 @@
 #include "../include/clsResponse.hpp"
 #include "../include/cgi.hpp"
-
+#include <sstream>
 
 
 std::string clsResponse::readFile(const std::string& path)

@@ -81,13 +81,15 @@ namespace MySpace
         size_t bodyBytesProcessed;
         int fd;
         
-        
+        std::map<std::string, std::string> cookieValues;
+        bool isCookie;
         bool isComplete;
         bool isRedirection;
         int nbrRedirects;
         MySpace::DataRequestForGetDelete RequestAtEnd;
         std::string Buffer;
         bool isSendHeader;
+        
         bool eraseHeadersDone;
         std::string boundary;
         bool forked;
@@ -141,6 +143,8 @@ namespace MySpace
     std::string generateUniqueFilename(const std::string& contentType);
 
     bool IS_CGI(const std::string& target);
+    
+    std::map<std::string, std::string> parseCookies(std::string cookiesHeader);
 
 };
 
