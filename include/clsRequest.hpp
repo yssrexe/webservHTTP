@@ -27,7 +27,7 @@ private:
 
     void _parsingMethod(std::string Method);
     void _parsingTarget(std::string target);
-    void _parsingVirsion(std::string virsion);
+    void _ParsingVersion(std::string virsion);
     void _parsingHeader(std::string header);
     void _ParsingLine(std::string Line);
     void ParsingGetMethod();

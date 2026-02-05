@@ -27,12 +27,13 @@ private:
     const Route* _findRoute(const std::string& target);
     int _fileExists(const std::string& path,const Route* route);
     std::string _buildPath(const Route& route, std::string target);
-    bool canWrite(const std::string& path);
-    bool canRead(const std::string& path);
+    bool _CanWrite(const std::string& path);
+    bool _CanRead(const std::string& path);
     bool isDirectory(const std::string& path);
     bool isFile(const std::string& path);
     void checkRoutingForPost();
     void sendRequestToTarget(std::string path);
+    bool IsNotPostMethod();
 
     
 

@@ -18,6 +18,7 @@
 #include <sys/epoll.h>
 #include "clsPostBodyFileHandler.hpp"
 #include <time.h>
+#include <cerrno>
 
 
 const int MAX_EVENTS = 64;
@@ -39,22 +40,22 @@ private:
     std::map<int, uint32_t> fdEventMask; 
     int epoll_fd;;
 
-    void _addFd(int fd, uint32_t events);
-    bool acceptNewClient();
+    void _RegisterFdOnEpoll(int fd, uint32_t events);
+    bool _AcceptNewClient();
     void _removeFd(int fd);
-    void _initServers(std::vector<Config> Servers);
-    int _serverSetup(Config &Servers);
-    int _createSocket();
-    int _binding(int server_fd,Config server);
-    int _listening(int server_fd);
-    void NonBlockingSocket(int server_fd);
-    void _RepenseError(int error,MySpace::BufferRequest &Buffer,int fd_Client,Config ConfigServer);
-   void _RepenseCorrect(int fd_Client,MySpace::BufferRequest &Buffer,Config ConfigServer);
-    void disable_epollout(int fd);
-    void enable_epollout(int fd);
-    bool is_skip(std::string Request);
-    void processRequestAndRespond();
-    void processEppillin();
+    void _InitServers(std::vector<Config> Servers);
+    int _ServerSetup(Config &Servers);
+    int _CreateSocket();
+    int _BindSocket(int server_fd,Config server);
+    int _StartListeningSocket(int server_fd);
+    void _NonBlockingSocket(int server_fd);
+    void _MakeRespenseError(int error,MySpace::BufferRequest &Buffer,int fd_Client,Config ConfigServer);
+   void _MakeRespenseCorrect(int fd_Client,MySpace::BufferRequest &Buffer,Config ConfigServer);
+    void _Enable_epollout(int fd);
+    void _CleanUpClientFd(int client_fd);
+    bool _IsIconRequestSkip(std::string Request);
+    void _ProcessEpollOutRequestStatus();
+    void _ProcessEpollinRequestStatus();
 
     void CheckTimeOutClients();
      void _HandleTimeOutforNoCGI(int client_fd);

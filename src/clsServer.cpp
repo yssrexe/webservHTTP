@@ -1,7 +1,7 @@
 #include "../include/clsServer.hpp"
 
 
-int clsServer::_createSocket()
+int clsServer::_CreateSocket()
 {
     int server_fd;
     int opt = 1;
@@ -14,7 +14,7 @@ int clsServer::_createSocket()
     return server_fd;
 }
 
-int clsServer::_binding(int server_fd,Config server)
+int clsServer::_BindSocket(int server_fd,Config server)
 {
     sockaddr_in address;
     std::memset(&address, 0, sizeof(address));
@@ -35,7 +35,7 @@ int clsServer::_binding(int server_fd,Config server)
     return (server_fd);
 }
 
-int clsServer::_listening(int server_fd)
+int clsServer::_StartListeningSocket(int server_fd)
 {
     if (listen(server_fd, 50) < 0)
     {
@@ -45,13 +45,13 @@ int clsServer::_listening(int server_fd)
     return (server_fd);
 }
 
-void clsServer::NonBlockingSocket(int fd)
+void clsServer::_NonBlockingSocket(int fd)
 {
     if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1)
         throw std::runtime_error("fcntl");
 }
 
-void clsServer::_addFd(int fd, uint32_t events)
+void clsServer::_RegisterFdOnEpoll(int fd, uint32_t events)
 {
      struct epoll_event ev;
     ev.events = events;
@@ -60,26 +60,26 @@ void clsServer::_addFd(int fd, uint32_t events)
         perror("epoll_ctl ADD server");
 }
 
-int clsServer::_serverSetup(Config &Servers)
+int clsServer::_ServerSetup(Config &Servers)
 {
     int server_fd;
 
-    server_fd = _createSocket();
-    server_fd = _binding(server_fd,Servers);
-    server_fd = _listening(server_fd);
-    NonBlockingSocket(server_fd);
+    server_fd = _CreateSocket();
+    server_fd = _BindSocket(server_fd,Servers);
+    server_fd = _StartListeningSocket(server_fd);
+    _NonBlockingSocket(server_fd);
     return (server_fd);
 }
 
-void  clsServer::_initServers(std::vector<Config> Servers)
+void  clsServer::_InitServers(std::vector<Config> Servers)
 {
     for (size_t i = 0; i < Servers.size(); ++i)
     {
         try
         {
-            int key = _serverSetup(Servers[i]);
+            int key = _ServerSetup(Servers[i]);
             mapServers.insert(std::make_pair(key, Servers[i]));
-            _addFd(key,EPOLLIN);
+            _RegisterFdOnEpoll(key,EPOLLIN);
            
         }
         catch (const std::exception& e)
@@ -100,38 +100,22 @@ clsServer::clsServer(std::vector<Config> Servers)
     epoll_fd = epoll_create1(0);
     if (epoll_fd < 0)
         throw std::runtime_error("epoll_create1");
-    _initServers(Servers);
+    _InitServers(Servers);
 }
 
-void clsServer::_RepenseError(int error,MySpace::BufferRequest &Buffer,int fd_Client,Config ConfigServer)
+void clsServer::_MakeRespenseError(int error,MySpace::BufferRequest &Buffer,int fd_Client,Config ConfigServer)
 {
     clsResponse ErrorResponse(error,Buffer,fd_Client,ConfigServer);
     ErrorResponse.SendResponse();
 }
 
-void clsServer::_RepenseCorrect(int fd_Client,MySpace::BufferRequest &Buffer,Config ConfigServer)
+void clsServer::_MakeRespenseCorrect(int fd_Client,MySpace::BufferRequest &Buffer,Config ConfigServer)
 {
     clsResponse Response(fd_Client,Buffer,ConfigServer);
     Response.SendResponse();
 }
 
-void clsServer::disable_epollout(int fd)
-{
-    uint32_t events = fdEventMask[fd];
-    if (!(events & EPOLLOUT)) 
-        return;
-
-    events &= ~EPOLLOUT;
-
-    struct epoll_event ev;
-    ev.events = events;
-    ev.data.fd = fd;
-
-    epoll_ctl(epoll_fd, EPOLL_CTL_MOD, fd, &ev);
-    fdEventMask[fd] = events;
-}
-
-void clsServer::enable_epollout(int fd)
+void clsServer::_Enable_epollout(int fd)
 {
     uint32_t events = fdEventMask[fd];
     if (events & EPOLLOUT) 
@@ -144,8 +128,24 @@ void clsServer::enable_epollout(int fd)
     epoll_ctl(epoll_fd, EPOLL_CTL_MOD, fd, &ev);
     fdEventMask[fd] = events;
 }
+
+void clsServer::_CleanUpClientFd(int client_fd)
+{
+   
+    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client_fd, NULL);
+    close(client_fd);
+
+    if (mapBuffers.count(client_fd))
+        mapBuffers.erase(client_fd);
+    if (mapCheckTimeOut.count(client_fd))
+        mapCheckTimeOut.erase(client_fd);
+    if (clientToServer.count(client_fd))
+        clientToServer.erase(client_fd);
+    if (fdEventMask.count(client_fd))
+        fdEventMask.erase(client_fd);
+}
  
-bool clsServer::is_skip(const std::string Request)
+bool clsServer::_IsIconRequestSkip(const std::string Request)
 {
     size_t endLine = Request.find("\r\n");
     if (endLine == std::string::npos)
@@ -165,7 +165,7 @@ bool clsServer::is_skip(const std::string Request)
     return (false);
 }
 
-MySpace::sData initData()
+MySpace::sData _InitBuffer()
 {
     MySpace::sData Data;
 
@@ -194,52 +194,48 @@ MySpace::sData initData()
     return Data;
 }
 
-MySpace::BufferRequest initBuffer()
+MySpace::BufferRequest _InitBuffersWithFlags()
 {
     MySpace::BufferRequest Buffer;
 
-    Buffer.BufferRead = initData();
-    Buffer.BufferWrite = initData();
+    Buffer.BufferRead = _InitBuffer();
+    Buffer.BufferWrite = _InitBuffer();
     Buffer.type = MySpace::UNKNOWN ;
 
     return Buffer;
 }
 
-bool clsServer::acceptNewClient()
+bool clsServer::_AcceptNewClient()
 {
     client_fd = accept(fd, NULL, NULL);
     if (client_fd < 0)
         return false;
     mapCheckTimeOut[client_fd] = time(NULL);
-    std::cout << "New client connected: " << client_fd << std::endl;
-    NonBlockingSocket(client_fd);
-    _addFd(client_fd,EPOLLIN);
+    _NonBlockingSocket(client_fd);
+    _RegisterFdOnEpoll(client_fd,EPOLLIN);
     clientToServer[client_fd] = fd;
     return true;
 }
 
-void clsServer::processRequestAndRespond()
+void clsServer::_ProcessEpollOutRequestStatus()
 {
     try
     {
-        _RepenseCorrect(fd,mapBuffers[fd],mapServers[clientToServer[fd]]);
+        _MakeRespenseCorrect(fd,mapBuffers[fd],mapServers[clientToServer[fd]]);
     }
     catch(int StatusCode)
     {
-        _RepenseError(StatusCode,mapBuffers[fd],fd,mapServers[clientToServer[fd]]);
-        close(fd);
-        mapBuffers.erase(fd);
-        disable_epollout(fd);
+        _MakeRespenseError(StatusCode,mapBuffers[fd],fd,mapServers[clientToServer[fd]]);
+        _CleanUpClientFd(fd);
+        return;
     }
     if(mapBuffers[fd].BufferWrite.isComplete)
     {
-        disable_epollout(fd);
-        close(fd);
-        mapBuffers.erase(fd);
+        _CleanUpClientFd(fd);
     }
 }
 
-void clsServer::processEppillin()
+void clsServer::_ProcessEpollinRequestStatus()
 {
     if (mapBuffers[fd].BufferRead.isComplete == true && mapBuffers[fd].BufferRead.isRouting == true)
         return;
@@ -256,54 +252,48 @@ void clsServer::processEppillin()
             clsPostBodyFileHandler clsPostBodyFileHandler(mapBuffers[fd]);
             mapBuffers[fd] = clsPostBodyFileHandler.StreamToFileWriter();
             if (mapBuffers[fd].BufferRead.isComplete)
-                enable_epollout(fd);
+                _Enable_epollout(fd);
         }
         
         
     }
     catch(int StatusCode)
     {
-        _RepenseError(StatusCode,mapBuffers[fd],fd,mapServers[clientToServer[fd]]);
-        close(fd);
-        disable_epollout(fd);
-        mapBuffers.erase(fd);
+        _MakeRespenseError(StatusCode,mapBuffers[fd],fd,mapServers[clientToServer[fd]]);
+        _CleanUpClientFd(fd);
     }
 }
 
-
 void clsServer::_HandleTimeOutforCGI(int client_fd)
 {
-        std::cout << "CGI handle time  fd " << client_fd << std::endl;
     if (kill(mapBuffers[client_fd].BufferRead._pid, SIGTERM) == -1)
     {
-        std::cerr << "Failed to kill CGI process with PID: " << mapBuffers[client_fd].BufferRead._pid << "\n\n\n"<< std::endl;
+        std::cerr << "Failed to kill CGI process with PID: " << mapBuffers[client_fd].BufferRead._pid << std::endl;
         return;
     }
+    int status;
+    waitpid(mapBuffers[client_fd].BufferRead._pid, &status, 0);
     clsResponse ErrorResponse(HTTP_TIME_OUT_CGI, mapBuffers[client_fd], client_fd, mapServers[clientToServer[client_fd]]);
     ErrorResponse.SendResponse();
     close(mapBuffers[client_fd].BufferRead.pipe_in_fd);
     close(mapBuffers[client_fd].BufferRead.pipe_out_fd);
-    close(client_fd);
-    if (mapBuffers.count(client_fd))
-        mapBuffers.erase(client_fd);
-    if (mapCheckTimeOut.count(client_fd))
-        mapCheckTimeOut.erase(client_fd);
+    _CleanUpClientFd(client_fd);
 }
     
 void clsServer::_HandleTimeOutforNoCGI(int client_fd)
 {
     if (!clientToServer.count(client_fd))
         return;
-    MySpace::BufferRequest buffer = initBuffer();
+    MySpace::BufferRequest buffer = _InitBuffersWithFlags();
     clsResponse ErrorResponse(HTTP_TIME_OUT, buffer, client_fd, mapServers[clientToServer[client_fd]]);
     ErrorResponse.SendResponse();
+    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client_fd, NULL);
     close(client_fd);
-    if (mapBuffers.count(client_fd))
-        mapBuffers.erase(client_fd);
 }
 
 void clsServer::CheckTimeOutClients()
 {
+    // i should return this  map 
     for (std::map<int ,time_t>::iterator it = mapCheckTimeOut.begin(); it != mapCheckTimeOut.end(); )
     {
         int client_fd = it->first;
@@ -336,10 +326,7 @@ void  clsServer::Run()
     {
         int ready = epoll_wait(epoll_fd, events, MAX_EVENTS, TIME_OUT_CLIENTS);
         if (ready < 0)
-        {
-            perror("epoll_wait");
-            break;
-        }
+            continue;
 
         for (int i = 0; i < ready; ++i)
         {
@@ -347,7 +334,7 @@ void  clsServer::Run()
             fd = events[i].data.fd;
             if (mapServers.count(fd))
             {
-                if(acceptNewClient() == false) 
+                if(_AcceptNewClient() == false) 
                     continue;
             }        
             else                  
@@ -358,24 +345,23 @@ void  clsServer::Run()
                     ssize_t bytes = recv(fd, buffer, sizeof(buffer), 0);
                     if (bytes <= 0)
                     {
-                        epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL);
-                        close(fd);
+                        _CleanUpClientFd(fd);
                         continue;
                     }
                     std::string chunk(buffer, bytes);
-                    if (is_skip(chunk))
+                    if (_IsIconRequestSkip(chunk))
                         goto label;
 
                     if (!mapBuffers.count(fd))
                     {
-                        mapBuffers[fd] = initBuffer();
+                        mapBuffers[fd] = _InitBuffersWithFlags();
                     }
                     mapBuffers[fd].BufferRead.Buffer.append(chunk);
 
-                    processEppillin();
+                    _ProcessEpollinRequestStatus();
                     if (mapBuffers[fd].BufferRead.isComplete == true  )
                     {
-                        enable_epollout(fd);
+                        _Enable_epollout(fd);
                     }
                 }
 
@@ -386,7 +372,7 @@ void  clsServer::Run()
 
                 if (events[i].events & EPOLLOUT)
                 {
-                    processRequestAndRespond();
+                    _ProcessEpollOutRequestStatus();
                 }
                 
             }

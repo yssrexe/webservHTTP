@@ -52,12 +52,12 @@ bool clsRounting::isDirectory(const std::string& path)
     return S_ISDIR(st.st_mode);
 }
 
-bool clsRounting::canRead(const std::string& path)
+bool clsRounting::_CanRead(const std::string& path)
 {
     return access(path.c_str(), R_OK) == 0;
 }
 
-bool clsRounting::canWrite(const std::string& path)
+bool clsRounting::_CanWrite(const std::string& path)
 {
     return access(path.c_str(), W_OK) == 0;
 }
@@ -66,12 +66,12 @@ int clsRounting::_fileExists(const std::string& path, const Route* route)
 {
     if (_Buffer.type == MySpace::GET)
     {
-        if (isFile(path) && canRead(path))
+        if (isFile(path) && _CanRead(path))
             return HTTP_SUCCESS;
         else if (isDirectory(path))
         {
             std::string indexPath = path + "/" + route->default_file;
-            if (isFile(indexPath) && canRead(indexPath))
+            if (isFile(indexPath) && _CanRead(indexPath))
                 return HTTP_SUCCESS;
         }
         return HTTP_NOT_FOUND;
@@ -133,9 +133,16 @@ void clsRounting::checkRoutingForPost()
     _Buffer.BufferRead.RequestAtEnd.target = "" + _Buffer.BufferRead.RequestAtEnd.route.upload_dir + "/" + MySpace::generateUniqueFilename(_Buffer.BufferRead.Content_Type);
 }
 
-MySpace::BufferRequest clsRounting::CheckRounting()
+bool clsRounting::IsNotPostMethod()
 {
     if (_Buffer.type != MySpace::POSTE || (_Buffer.type == MySpace::POSTE && _Buffer.BufferRead.RequestAtEnd.isRequestForCGI))
+        return true;
+    return false;
+}
+
+MySpace::BufferRequest clsRounting::CheckRounting()
+{
+    if (IsNotPostMethod())
     {
      
         if (_Buffer.BufferRead.isRouting || !_Buffer.BufferRead.parsingLineAndHeader)
@@ -171,9 +178,8 @@ MySpace::BufferRequest clsRounting::CheckRounting()
         
     }
     else
-    {
         checkRoutingForPost();
-    }
+    
 
     return _Buffer;
 }

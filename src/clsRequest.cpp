@@ -27,7 +27,7 @@ void clsRequest::_parsingTarget(std::string target)
         throw HTTP_BAD_REQUEST;
 }
 
-void clsRequest::_parsingVirsion(std::string virsion)
+void clsRequest::_ParsingVersion(std::string virsion)
 {
     if (virsion != "HTTP/1.1" && virsion != "HTTP/1.0")
         throw HTTP_BAD_REQUEST;
@@ -71,7 +71,7 @@ void clsRequest::_ParsingLine(std::string Line)
         throw HTTP_BAD_REQUEST;
     _parsingMethod(SLine[0]);
     _parsingTarget(SLine[1]);
-    _parsingVirsion(SLine[2]);
+    _ParsingVersion(SLine[2]);
     _BufferRequest.BufferRead.RequestAtEnd.method = SLine[0];
     _BufferRequest.BufferRead.RequestAtEnd.target = SForTargetandQuery[0];
     _BufferRequest.BufferRead.RequestAtEnd.queryString = (SForTargetandQuery.size() > 1) ? SForTargetandQuery[1] : "";
@@ -133,11 +133,10 @@ MySpace::BufferRequest clsRequest::ParsingRequest()
     {
         case MySpace::GET:
             ParsingGetMethod();
-            // std::cout << _BufferRequest.BufferRead.RequestAtEnd.target << std::endl;
             break;
         
         case MySpace::DELETE:
-            ParsingGetMethod();
+            ParsingDeleteRequest();
             break;
         
         case MySpace::POSTE:
