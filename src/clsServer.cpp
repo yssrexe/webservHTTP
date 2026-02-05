@@ -144,7 +144,7 @@ void clsServer::enable_epollout(int fd)
     epoll_ctl(epoll_fd, EPOLL_CTL_MOD, fd, &ev);
     fdEventMask[fd] = events;
 }
-
+ 
 bool clsServer::is_skip(const std::string Request)
 {
     size_t endLine = Request.find("\r\n");
@@ -157,7 +157,12 @@ bool clsServer::is_skip(const std::string Request)
     if (vLine.size() < 2)
         return false;
 
-    return (vLine[1] == "/favicon.ico");
+    if (vLine[1] == "/favicon.ico")
+    {
+        mapCheckTimeOut.erase(fd);
+        return (true);
+    }
+    return (false);
 }
 
 MySpace::sData initData()
@@ -185,6 +190,7 @@ MySpace::sData initData()
     Data.isRedirection = false;
     Data.finishExc = false;
     Data.bodyBytesProcessed = 0;
+    Data.RequestAtEnd.isRequestForCGI = false;
     return Data;
 }
 
@@ -204,6 +210,8 @@ bool clsServer::acceptNewClient()
     client_fd = accept(fd, NULL, NULL);
     if (client_fd < 0)
         return false;
+    mapCheckTimeOut[client_fd] = time(NULL);
+    std::cout << "New client connected: " << client_fd << std::endl;
     NonBlockingSocket(client_fd);
     _addFd(client_fd,EPOLLIN);
     clientToServer[client_fd] = fd;
@@ -262,12 +270,71 @@ void clsServer::processEppillin()
     }
 }
 
+
+void clsServer::_HandleTimeOutforCGI(int client_fd)
+{
+        std::cout << "CGI handle time  fd " << client_fd << std::endl;
+    if (kill(mapBuffers[client_fd].BufferRead._pid, SIGTERM) == -1)
+    {
+        std::cerr << "Failed to kill CGI process with PID: " << mapBuffers[client_fd].BufferRead._pid << "\n\n\n"<< std::endl;
+        return;
+    }
+    clsResponse ErrorResponse(HTTP_TIME_OUT_CGI, mapBuffers[client_fd], client_fd, mapServers[clientToServer[client_fd]]);
+    ErrorResponse.SendResponse();
+    close(mapBuffers[client_fd].BufferRead.pipe_in_fd);
+    close(mapBuffers[client_fd].BufferRead.pipe_out_fd);
+    close(client_fd);
+    if (mapBuffers.count(client_fd))
+        mapBuffers.erase(client_fd);
+    if (mapCheckTimeOut.count(client_fd))
+        mapCheckTimeOut.erase(client_fd);
+}
+    
+void clsServer::_HandleTimeOutforNoCGI(int client_fd)
+{
+    if (!clientToServer.count(client_fd))
+        return;
+    MySpace::BufferRequest buffer = initBuffer();
+    clsResponse ErrorResponse(HTTP_TIME_OUT, buffer, client_fd, mapServers[clientToServer[client_fd]]);
+    ErrorResponse.SendResponse();
+    close(client_fd);
+    if (mapBuffers.count(client_fd))
+        mapBuffers.erase(client_fd);
+}
+
+void clsServer::CheckTimeOutClients()
+{
+    for (std::map<int ,time_t>::iterator it = mapCheckTimeOut.begin(); it != mapCheckTimeOut.end(); )
+    {
+        int client_fd = it->first;
+        time_t currentTime = time(NULL);
+        double elapsedMilliseconds =  (currentTime -  it->second) * 1000.0;
+        if (elapsedMilliseconds >= TIME_OUT_CLIENTS)
+        {
+            if (mapBuffers.count(client_fd) && mapBuffers[client_fd].BufferRead.RequestAtEnd.isRequestForCGI == true)
+            {
+                _HandleTimeOutforCGI(client_fd);
+            }
+            else if (mapBuffers.count(client_fd) == 0)
+            {
+                _HandleTimeOutforNoCGI(client_fd);
+            }
+            it++;
+        }
+        else
+        {
+            ++it;
+        }
+    }
+}
+
+
 void  clsServer::Run()
 {
     signal(SIGPIPE, SIG_IGN);
     while (1)
     {
-        int ready = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
+        int ready = epoll_wait(epoll_fd, events, MAX_EVENTS, TIME_OUT_CLIENTS);
         if (ready < 0)
         {
             perror("epoll_wait");
@@ -311,11 +378,21 @@ void  clsServer::Run()
                         enable_epollout(fd);
                     }
                 }
+
+                if (mapCheckTimeOut.count(fd) && mapBuffers[fd].BufferRead.RequestAtEnd.isRequestForCGI == false)
+                {
+                   mapCheckTimeOut.erase(fd);
+                }
+
                 if (events[i].events & EPOLLOUT)
+                {
                     processRequestAndRespond();
+                }
                 
             }
         
         }
+        if (!mapCheckTimeOut.empty())
+            CheckTimeOutClients();
     }
 } 

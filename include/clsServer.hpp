@@ -17,9 +17,12 @@
 #include <map>
 #include <sys/epoll.h>
 #include "clsPostBodyFileHandler.hpp"
+#include <time.h>
+
 
 const int MAX_EVENTS = 64;
 
+#define TIME_OUT_CLIENTS 5000
 
 class clsServer
 {
@@ -29,6 +32,7 @@ private:
     int client_fd;
     int fd;
     std::map<int, int> clientToServer;
+    std::map<int, time_t> mapCheckTimeOut;
     std::map<int ,MySpace::BufferRequest> mapBuffers;
     struct epoll_event events[MAX_EVENTS];
     std::map<int, Config> mapServers;
@@ -51,6 +55,10 @@ private:
     bool is_skip(std::string Request);
     void processRequestAndRespond();
     void processEppillin();
+
+    void CheckTimeOutClients();
+     void _HandleTimeOutforNoCGI(int client_fd);
+     void _HandleTimeOutforCGI(int client_fd);
     
 public:
     

@@ -17,8 +17,8 @@
 #define HTTP_SUCCESS                200 
 #define HTTP_NO_CONTENT             204
 #define HTTP_INTERNAL_SERVER_ERROR  500
-
-
+#define HTTP_TIME_OUT_CGI          504
+#define HTTP_TIME_OUT              408
 
 #include <istream>
 #include <iomanip>
