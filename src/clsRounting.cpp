@@ -70,9 +70,14 @@ int clsRounting::_fileExists(const std::string& path, const Route* route)
             return HTTP_SUCCESS;
         else if (isDirectory(path))
         {
-            std::string indexPath = path + "/" + route->default_file;
-            if (isFile(indexPath) && _CanRead(indexPath))
+            if (route->dir_listing == "on")
+            {
+                _Buffer.BufferRead.isAutoIndex = true;
+                _Buffer.BufferRead.autoIndexList = MySpace::getAutoIndexList(path);
                 return HTTP_SUCCESS;
+            }
+            else
+             return HTTP_FORBIDDEN;
         }
         return HTTP_NOT_FOUND;
     }

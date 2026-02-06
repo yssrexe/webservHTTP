@@ -4,8 +4,9 @@
 #include "../include/cgi.hpp"
 #include <ctime>
 #include <sys/time.h>
- #include <sys/ioctl.h>
- #include <unistd.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
+#include <dirent.h>
 
 
 
@@ -77,6 +78,7 @@ namespace MySpace
             return true;
         return false;
     }
+    
     static std::string intToString(int value)
     {
         std::stringstream ss;
@@ -317,6 +319,52 @@ bool MySpace::IS_CGI(const std::string& target)
             return true;
     }
     return false;
+}
+
+std::string MySpace::buildAutoIndexPage(const std::vector<std::string>& fileList, const std::string& path,std::string NameRoute)
+{
+    std::stringstream html;
+    html << "<!DOCTYPE html><html><head><title>Index of " << path << "</title>";
+    html << "<style>";
+    html << "body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }";
+    html << "h1 { color: #333; }";
+    html << "ul { list-style: none; padding: 0; }";
+    html << "li { padding: 10px; margin: 5px 0; background-color: #fff; border-radius: 4px; transition: all 0.3s; }";
+    html << "li:hover { background-color: #e8f4f8; transform: translateX(5px); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }";
+    html << "a { text-decoration: none; color: #0066cc; font-weight: 500; }";
+    html << "a:hover { color: #0052a3; text-decoration: underline; }";
+    html << "</style></head><body>";
+    html << "<h1>Index of " << path << "</h1><ul>";
+    
+    for (size_t i = 0; i < fileList.size(); ++i)
+    {
+        std::string file = fileList[i];
+        std::string fullPath = NameRoute;
+        if (fullPath[fullPath.length() - 1] != '/')
+            fullPath += "/";
+        fullPath += file;
+        html << "<li><a href=\"" << fullPath << "\">" << file << "</a></li>";
+    }
+    
+    html << "</ul></body></html>";
+    return html.str();
+}
+
+std::vector<std::string> MySpace::getAutoIndexList(const std::string& path)
+{
+    std::vector<std::string> fileList;
+    DIR* dir = opendir(path.c_str());
+    if (dir)
+    {
+        struct dirent* entry;
+        while ((entry = readdir(dir)) != NULL)
+        {
+            if (std::string(entry->d_name) != "." && std::string(entry->d_name) != "..")
+                fileList.push_back(entry->d_name);
+        }
+        closedir(dir);
+    }
+    return fileList;
 }
 
 std::vector<std::string> MySpace::_Split(const std::string& str, const std::string& delimiter) 

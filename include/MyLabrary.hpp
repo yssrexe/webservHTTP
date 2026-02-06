@@ -85,6 +85,8 @@ namespace MySpace
         bool isCookie;
         bool isComplete;
         bool isRedirection;
+        bool isAutoIndex;
+        std::vector<std::string> autoIndexList;
         int nbrRedirects;
         MySpace::DataRequestForGetDelete RequestAtEnd;
         std::string Buffer;
@@ -111,6 +113,9 @@ namespace MySpace
     };   
 
     size_t getPipeSize(int pipeFd);
+
+    std::vector<std::string> getAutoIndexList(const std::string& path);
+    std::string buildAutoIndexPage(const std::vector<std::string>& fileList, const std::string& path,std::string NameRoute);
 
      void EraseHearse(MySpace::BufferRequest& _Buffer);
 

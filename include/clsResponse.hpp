@@ -34,6 +34,9 @@ private:
     bool CheckIsCGI();
     void sendRedirect(const std::string& redirectPath, int statusCode = 301); // for redirect responses
     void sendHeaderCGI();
+    void BuildResponseAutoIndex();
+    void BuildResponseCgi();
+
 public:
 
     void SendResponse();

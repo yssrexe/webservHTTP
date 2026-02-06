@@ -1,8 +1,11 @@
-1 ) Configuration parsing error: It is not allowed to have two servers with the same configuration.  done
-2 ) Invalid route: A route must have at least one allowed HTTP method.
-4 ) Invalid server: A server must define at least one allowed HTTP method.
-5 ) Required body size: A maximum body size must be defined.
-6 ) Required error page: An error page must be configured.
-7 ) POST method requirement: If the POST method is allowed, an upload directory (dir_uploads) must be defined.
-8 ) Root path requirement: Each route must have a root path.
-10)  Invalid configuration: Any missing required directive should result in an error like all http status code .
+Suggested citations for a report
+
+Here’s how you could phrase it with references:
+
+In NGINX, directory listing is controlled by the autoindex 
+directive. When autoindex on; is set in a location block, NGINX will produce a listing of files in the directory only if no index file is found.
+ This behavior is implemented by the ngx_http_autoindex_module, which runs when the index module cannot find a default index page such as index.html.
+
+Clicking a file in that directory listing sends a normal HTTP GET request for the file path. 
+NGINX will then serve the file’s contents based on its MIME type as a regular static file response. 
+The directory listing module does not affect how individual files are delivered once requested.

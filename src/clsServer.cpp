@@ -191,6 +191,7 @@ MySpace::sData _InitBuffer()
     Data.finishExc = false;
     Data.bodyBytesProcessed = 0;
     Data.RequestAtEnd.isRequestForCGI = false;
+    Data.isAutoIndex = false;
     return Data;
 }
 

@@ -191,25 +191,24 @@ void clsResponse::sendHeaderCGI()
         _Buffer.BufferRead.isSendHeader = false;
 }
 
-
-void clsResponse::SendResponse()
+void clsResponse::BuildResponseAutoIndex()
 {
+    std::string body = MySpace::buildAutoIndexPage(_Buffer.BufferRead.autoIndexList, _Buffer.BufferRead.RequestAtEnd.target, _Buffer.BufferRead.RequestAtEnd.route.name);
+        std::stringstream response;
+        response << "HTTP/1.1 200 OK\r\n";
+        response << "Content-Type: text/html\r\n";
+        response << "Content-Length: " << body.size() << "\r\n";
+        response << "Connection: close\r\n";
+        response << "\r\n";
+        response << body;
 
-    std::string response;
+        send(_fd_Clieant, response.str().c_str(), response.str().size(), 0);
+        _Buffer.BufferWrite.isComplete = true;
+}
 
-    if (_HappenError)
-    {
-        response = buildResponse(_NumberError,_ConfigServer.error_pages.at(_NumberError));
-        send(_fd_Clieant, response.c_str(), response.size(), 0);
-
-    }
-    else  if (_Buffer.BufferRead.isRedirection)
-    {
-        sendRedirect(_Buffer.BufferRead.RequestAtEnd.target,_Buffer.BufferRead.nbrRedirects);
-    }
-    else if (MySpace::CheckIsCGI(_Buffer))
-    {
-        Cgi cgi(_Buffer.BufferRead.RequestAtEnd, 0, _ConfigServer);
+void clsResponse::BuildResponseCgi()
+{
+    Cgi cgi(_Buffer.BufferRead.RequestAtEnd, 0, _ConfigServer);
         switch (_Buffer.type)
         {
             case MySpace::GET:
@@ -230,6 +229,30 @@ void clsResponse::SendResponse()
                 throw HTTP_BAD_REQUEST;
                 break;
         }
+}
+
+void clsResponse::SendResponse()
+{
+
+    std::string response;
+
+    if (_HappenError)
+    {
+        response = buildResponse(_NumberError,_ConfigServer.error_pages.at(_NumberError));
+        send(_fd_Clieant, response.c_str(), response.size(), 0);
+
+    }
+    else  if (_Buffer.BufferRead.isRedirection)
+    {
+        sendRedirect(_Buffer.BufferRead.RequestAtEnd.target,_Buffer.BufferRead.nbrRedirects);
+    }
+    else if (_Buffer.BufferRead.isAutoIndex)
+    {
+        BuildResponseAutoIndex();
+    }
+    else if (MySpace::CheckIsCGI(_Buffer))
+    {
+        BuildResponseCgi();
     }
     else if (_Buffer.BufferRead.isRouting && _Buffer.BufferRead.isComplete)
     {
