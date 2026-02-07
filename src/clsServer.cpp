@@ -260,7 +260,6 @@ void clsServer::_ProcessEpollinRequestStatus()
     }
     catch(int StatusCode)
     {
-        std::cout << "from catch error" << std::endl;
         _MakeRespenseError(StatusCode,mapBuffers[fd],fd,mapServers[clientToServer[fd]]);
         _CleanUpClientFd(fd);
     }
@@ -295,7 +294,6 @@ void clsServer::_HandleTimeOutforNoCGI(int client_fd)
 
 void clsServer::CheckTimeOutClients()
 {
-    // i should return this  map 
     for (std::map<int ,time_t>::iterator it = mapCheckTimeOut.begin(); it != mapCheckTimeOut.end(); )
     {
         int client_fd = it->first;

@@ -1,3 +1,7 @@
 check if redirection is a website 
 if yes 
     add "https" string to the redirect value
+
+
+
+REDIRECT=301-/support;
