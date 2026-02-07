@@ -1,11 +1,3 @@
-Suggested citations for a report
-
-Here’s how you could phrase it with references:
-
-In NGINX, directory listing is controlled by the autoindex 
-directive. When autoindex on; is set in a location block, NGINX will produce a listing of files in the directory only if no index file is found.
- This behavior is implemented by the ngx_http_autoindex_module, which runs when the index module cannot find a default index page such as index.html.
-
-Clicking a file in that directory listing sends a normal HTTP GET request for the file path. 
-NGINX will then serve the file’s contents based on its MIME type as a regular static file response. 
-The directory listing module does not affect how individual files are delivered once requested.
+check if redirection is a website 
+if yes 
+    add "https" string to the redirect value

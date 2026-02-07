@@ -155,7 +155,7 @@ namespace MySpace
                     _Buffer.BufferWrite.Content_Type = it->second;
                 else if (it->first == "Status")
                     _Buffer.BufferWrite.status = std::atoi(it->second.c_str());
-                else if (it->first == "Cookie")
+                else if (it->first == "Set-Cookie")
                     _Buffer.BufferWrite.setHeaderCookie.push_back("Set-Cookie: " + it->second + "\r\n");
                 else if (it->first == "Connection")
                     _Buffer.BufferWrite.connection = it->second;
@@ -174,7 +174,7 @@ namespace MySpace
                 case 502: statusMessage = "Bad Gateway"; break;
                 default: statusMessage = "OK"; break;
             }
-
+            // std::cout << "status code : " << intToString(_Buffer.BufferWrite.status) << std::endl;
             _Buffer.BufferWrite._headers = _Buffer.BufferRead.RequestAtEnd.version + " " + intToString(_Buffer.BufferWrite.status) + " " + statusMessage + "\r\n";
             _Buffer.BufferWrite._headers += "Server: webserv/1.0\r\n";
             _Buffer.BufferWrite._headers += "Content-Type: " + _Buffer.BufferWrite.Content_Type + "\r\n";
@@ -246,7 +246,6 @@ namespace MySpace
             return "video/x-matroska";
         if (endsWith(path, ".wmv"))
             return "video/x-ms-wmv";
-
         return "application/octet-stream";
     }
 
@@ -449,6 +448,38 @@ std::string MySpace::generateUniqueFilename(const std::string& contentType)
         extension = ".xml";
     ss << extension;
     return ss.str();
+}
+
+std::map<std::string, std::string> MySpace::parseCookies(std::string cookieHeader)
+{
+    std::map<std::string, std::string> cookies;
+
+    if (cookieHeader.empty())
+        return cookies;
+
+    std::vector<std::string> cookiePairs = _Split(cookieHeader, "; ");
+
+    for (size_t i = 0; i < cookiePairs.size(); ++i)
+    {
+        size_t pos = cookiePairs[i].find('=');
+        if (pos != std::string::npos)
+        {
+            std::string key = cookiePairs[i].substr(0, pos);
+            std::string value = cookiePairs[i].substr(pos + 1);
+
+            size_t keyStart = key.find_first_not_of(" \t");
+            size_t keyEnd = key.find_last_not_of(" \t");
+            if (keyStart != std::string::npos && keyEnd != std::string::npos)
+                key = key.substr(keyStart, keyEnd - keyStart + 1);
+            
+            size_t valueStart = value.find_first_not_of(" \t");
+            size_t valueEnd = value.find_last_not_of(" \t");
+            if (valueStart != std::string::npos && valueEnd != std::string::npos)
+                value = value.substr(valueStart, valueEnd - valueStart + 1);
+            cookies[key] = value;
+        }
+    }
+    return cookies;
 }
 
 

@@ -55,12 +55,17 @@ void clsRequest::_parsingHeader(std::string header)
     
     else
         _BufferRequest.BufferRead.Content_Type = "";
-
+    if (_BufferRequest.BufferRead.RequestAtEnd.headers.count("Cookie") > 0)
+    {
+        _BufferRequest.BufferRead.cookieValues = MySpace::parseCookies(_BufferRequest.BufferRead.RequestAtEnd.headers["Cookie"]);
+        _BufferRequest.BufferRead.isCookie = true;
+    }
+    else
+        _BufferRequest.BufferRead.isCookie = false;
 }
- 
+
 clsRequest::clsRequest(MySpace::BufferRequest& BufferRequest) : _BufferRequest(BufferRequest)
 {
-
 }
 
 void clsRequest::_ParsingLine(std::string Line)

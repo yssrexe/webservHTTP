@@ -167,6 +167,7 @@ MySpace::BufferRequest clsRounting::CheckRounting()
         
         if (route->redirect.size())
         {
+            std::cout << "insid redirection" << std::endl;
             std::map<int, std::string>::const_iterator it = route->redirect.begin();
             
             _Buffer.BufferRead.RequestAtEnd.target = it->second;
