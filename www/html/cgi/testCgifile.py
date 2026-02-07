@@ -16,8 +16,6 @@ languages = [
 # Print HTTP headers
 print("Content-Type: text/html")
 print("Status: 200 OK")
-print("Cache-Control: no-cache")
-print("Server: Python/3.x")
 print("\r\n\r\n")  # Empty line to separate headers from body
 
 # Build the bars HTML

@@ -92,7 +92,12 @@ void Cgi::SetEnv()
     else if (fExten == ".sh")
         interpreter = "/bin/bash";
     else
+    {
+        std::cout << "hna 2" << std::endl;
         throw HTTP_INTERNAL_SERVER_ERROR;
+
+    }
+        
         
 
 }
@@ -100,12 +105,20 @@ void Cgi::SetEnv()
 void Cgi::CreateChild()
 {
     if (pipe(pipe_in) == -1 || pipe(pipe_out) == -1)
+    {
+        std::cout << "hna 3" << std::endl;
         throw HTTP_INTERNAL_SERVER_ERROR;
+    }
+        
     pid = fork();
     if (pid < 0)
     {
         std::cout << "Faild fork " << std::endl;
-        throw HTTP_INTERNAL_SERVER_ERROR;
+        {
+            std::cout << "hna 4" << std::endl;
+            throw HTTP_INTERNAL_SERVER_ERROR;
+        }
+        
     }
     else if (pid == 0)
     {
@@ -143,6 +156,7 @@ void Cgi::WritePostBodyToPipe()
     if (_Buffer.BufferRead.ContentLength > static_cast<size_t>(max_body_size))
     {
         close(pipe_in[1]);
+        std::cout << "hna 5" << std::endl;
         throw HTTP_INTERNAL_SERVER_ERROR;
     }
 
@@ -151,6 +165,8 @@ void Cgi::WritePostBodyToPipe()
     if (fd < 0)
     {
         close(pipe_in[1]);
+        std::cout << "hna 6" << std::endl;
+
         throw HTTP_INTERNAL_SERVER_ERROR;
     }
 
@@ -170,6 +186,8 @@ void Cgi::WritePostBodyToPipe()
         {
             close(fd);
             close(pipe_in[1]);
+        std::cout << "hna 7" << std::endl;
+
             throw HTTP_INTERNAL_SERVER_ERROR;
         }
         totalWritten += bytesWritten;
@@ -181,6 +199,8 @@ void Cgi::WritePostBodyToPipe()
     {
         close(fd);
         close(pipe_in[1]);
+        std::cout << "hna 8" << std::endl;
+
         throw HTTP_INTERNAL_SERVER_ERROR;
     }
 
@@ -219,7 +239,11 @@ MySpace::BufferRequest Cgi::handleCgiRequest(MySpace::BufferRequest buffer)
     if (waitResult > 0 && WIFEXITED(statuspid)) 
     {
         if (WEXITSTATUS(statuspid) != 0)
+        {
+            std::cout << "hna 8" << std::endl;
             throw HTTP_INTERNAL_SERVER_ERROR;
+        }
+            
         _Buffer.BufferRead.finishExc = true;
         _Buffer.BufferRead.isComplete = true;
         _Buffer.BufferWrite.isfileOpen = true;

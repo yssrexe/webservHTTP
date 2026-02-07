@@ -154,7 +154,7 @@ void Route::insertRedirect(std::string &redirect)
     {
         signal = ft_trim(signal);
         word = ft_trim(word);
-        if (std::count(word.begin(), word.end(), '.') == 2)
+        if (std::count(word.begin(), word.end(), '.') > 1)
             word = "/https:/" + word;
         if (!isNumber(signal) || word[0] != '/')
             throw std::runtime_error("redirect not valid");

@@ -134,7 +134,11 @@ void clsResponse::_performentDelete(std::string path)
     response << "\r\n";
 
     if (std::remove(path.c_str()) != 0)
+    {
+        std::cout << "hna 1" << std::endl;
         throw HTTP_INTERNAL_SERVER_ERROR;
+    }
+        
     if(send(_fd_Clieant, response.str().c_str(), response.str().size(), 0) <= 0)
         std::cout << "failded send in deleled "<< std::endl;
      _Buffer.BufferWrite.isComplete = true;
