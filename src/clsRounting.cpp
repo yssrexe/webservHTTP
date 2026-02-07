@@ -147,6 +147,8 @@ bool clsRounting::IsNotPostMethod()
 
 MySpace::BufferRequest clsRounting::CheckRounting()
 {
+    if (_Buffer.BufferRead.ContentLength > (size_t)_server.max_body_size)
+        throw HTTP_PAYLOAD_TOO_LARGE;
     if (IsNotPostMethod())
     {
      
@@ -167,7 +169,6 @@ MySpace::BufferRequest clsRounting::CheckRounting()
         
         if (route->redirect.size())
         {
-            std::cout << "insid redirection" << std::endl;
             std::map<int, std::string>::const_iterator it = route->redirect.begin();
             
             _Buffer.BufferRead.RequestAtEnd.target = it->second;

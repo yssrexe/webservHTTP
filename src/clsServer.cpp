@@ -260,6 +260,7 @@ void clsServer::_ProcessEpollinRequestStatus()
     }
     catch(int StatusCode)
     {
+        std::cout << "from catch error" << std::endl;
         _MakeRespenseError(StatusCode,mapBuffers[fd],fd,mapServers[clientToServer[fd]]);
         _CleanUpClientFd(fd);
     }

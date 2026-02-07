@@ -197,12 +197,15 @@
                         method: 'POST',
                         body: formData,
                     });
-
                     if (!response.ok) {
+                        // Redirect to 413 error page if file is too large
+                        if (response.status === 413) {
+                            window.location.href = '/413.html';
+                            return;
+                        }
                         setStatus('Upload failed. Please try again.', true);
                         return;
                     }
-
                     setStatus('Upload successful!', false);
                     form.reset();
                 } catch (error) {
