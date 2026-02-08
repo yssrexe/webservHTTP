@@ -34,18 +34,15 @@ def remove_session(session_id):
         pass
 
 def main():
-    # Get cookies from request
     cookies = parse_cookies()
     session_id = cookies.get('session_id', '')
     
-    # Remove session if exists
     if session_id:
         remove_session(session_id)
-    
-    # Send response with cookie deletion
+
     print("Status: 200 OK")
     print("Content-Type: text/html")
-    print("Set-Cookie: session_id=; Max-Age=0; Path=/")  # Delete cookie by setting Max-Age to 0
+    print("Set-Cookie: session_id=; Max-Age=0; Path=/")
     print("\r\n\r\n")
     print("""<!DOCTYPE html>
 <html lang="en">

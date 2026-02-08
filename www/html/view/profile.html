@@ -131,7 +131,6 @@
     </div>
 
     <script>
-        // Function to get cookie value
         function getCookie(name) {
             const value = `; ${document.cookie}`;
             const parts = value.split(`; ${name}=`);
@@ -139,35 +138,26 @@
             return null;
         }
 
-        // Check authentication and display profile
         function loadProfile() {
             const sessionId = getCookie('session_id');
             const username = getCookie('username');
-
-            // Debug logging
-            console.log('All cookies:', document.cookie);
-            console.log('Session ID:', sessionId);
-            console.log('Username:', username);
 
             const loading = document.getElementById('loading');
             const profileContent = document.getElementById('profile-content');
             const notAuthenticated = document.getElementById('not-authenticated');
 
             if (sessionId && username) {
-                // User is authenticated
                 const decodedUsername = decodeURIComponent(username);
                 document.getElementById('username-display').textContent = decodedUsername;
 
                 loading.style.display = 'none';
                 profileContent.style.display = 'block';
             } else {
-                // User is not authenticated
                 loading.style.display = 'none';
                 notAuthenticated.style.display = 'block';
             }
         }
 
-        // Load profile on page load
         window.addEventListener('DOMContentLoaded', loadProfile);
     </script>
 </body>

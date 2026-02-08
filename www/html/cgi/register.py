@@ -3,7 +3,6 @@ import os
 import sys
 from urllib.parse import parse_qs
 
-# Storage files
 ACCOUNTS_FILE = "/tmp/webserv_accounts.txt"
 
 def user_exists(username):
@@ -29,7 +28,6 @@ def save_account(username, password):
         return False
 
 def main():
-    # Parse form data from POST request
     try:
         content_length = int(os.environ.get('CONTENT_LENGTH', '0') or '0')
     except ValueError:
@@ -46,7 +44,6 @@ def main():
         password = ''
         confirm_password = ''
     
-    # Validate input
     if not username or not password:
         send_error_response("Username and password are required.")
         return
@@ -63,12 +60,10 @@ def main():
         send_error_response("Passwords do not match.")
         return
     
-    # Check if user already exists
     if user_exists(username):
         send_error_response("Username already exists. Please choose a different username.")
         return
     
-    # Save the new account
     if save_account(username, password):
         send_success_response(username)
     else:

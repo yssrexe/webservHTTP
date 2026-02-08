@@ -198,7 +198,6 @@
                         body: formData,
                     });
                     if (!response.ok) {
-                        // Redirect to 413 error page if file is too large
                         if (response.status === 413) {
                             window.location.href = '/413.html';
                             return;

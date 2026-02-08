@@ -6,8 +6,6 @@ import os
 import sys
 from urllib.parse import parse_qs
 
-# Simple in-memory session storage (for demonstration)
-# In production, this would be in a database or persistent storage
 SESSIONS_FILE = "/tmp/webserv_sessions.txt"
 USERS_FILE = "/tmp/webserv_users.txt"
 ACCOUNTS_FILE = "/tmp/webserv_accounts.txt"
@@ -32,7 +30,6 @@ def get_user_reload_count(username):
 def save_session(session_id, username):
     """Save session to file with user's current reload count"""
     try:
-        # Get the user's existing reload count
         reload_count = get_user_reload_count(username)
         with open(SESSIONS_FILE, 'a') as f:
             f.write(f"{session_id}:{username}:{reload_count}\n")
@@ -66,7 +63,6 @@ def user_exists(username):
     return False
 
 def main():
-    # Parse form data from POST request
     try:
         content_length = int(os.environ.get('CONTENT_LENGTH', '0') or '0')
     except ValueError:
@@ -81,15 +77,11 @@ def main():
         username = ''
         password = ''
     
-    # Verify credentials
     if verify_credentials(username, password):
-        # Generate session ID
         session_id = generate_session_id()
         
-        # Save session
         save_session(session_id, username)
-        
-        # Send success response with redirect
+
         print("Content-Type: text/html")
         print(f"Set-Cookie: session_id={session_id}; Max-Age=3600; Path=/")
         print(f"Set-Cookie: username={username}; Max-Age=3600; Path=/")
@@ -176,10 +168,8 @@ def main():
 </body>
 </html>""")
     elif user_exists(username):
-        # User exists but wrong password
         send_wrong_password_error()
     else:
-        # User doesn't exist - redirect to registration
         send_user_not_found_error(username)
 
 def send_wrong_password_error():

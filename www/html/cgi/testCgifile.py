@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
-"""
-Simple script that generates HTML code as output with HTTP headers
-Shows a colorful data visualization of programming languages
-"""
 
-# Sample data
+
 languages = [
     {"name": "Python", "popularity": 85, "color": "#3776ab"},
     {"name": "JavaScript", "popularity": 78, "color": "#f7df1e"},
@@ -13,12 +9,10 @@ languages = [
     {"name": "Go", "popularity": 45, "color": "#00add8"}
 ]
 
-# Print HTTP headers
 print("Content-Type: text/html")
 print("Status: 200 OK")
-print("\r\n\r\n")  # Empty line to separate headers from body
+print("\r\n\r\n")
 
-# Build the bars HTML
 bars_html = ""
 for lang in languages:
     bars_html += f"""
@@ -29,7 +23,6 @@ for lang in languages:
             </div>
         </div>"""
 
-# Print HTML content in one print statement
 print(f"""<!DOCTYPE html>
 <html lang="en">
 <head>
