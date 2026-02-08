@@ -2,7 +2,7 @@
 
 clsRounting::clsRounting(MySpace::BufferRequest& Buffer,Config server) : _Buffer(Buffer) , _server(server)
 {
-  
+
 }
 
 bool clsRounting::_isMethodAllowed(std::string& target,const std::vector<std::string> methods)

@@ -122,7 +122,6 @@ void clsRequest::ParsingDeleteRequest()
 
 void clsRequest::ParsingPosteRequest()
 {
-
     if (!_BufferRequest.BufferRead.parsingLineAndHeader)
     {
         ParsingGetMethod();
@@ -156,5 +155,4 @@ MySpace::BufferRequest clsRequest::ParsingRequest()
 
 clsRequest::~clsRequest()
 {
-    
 }

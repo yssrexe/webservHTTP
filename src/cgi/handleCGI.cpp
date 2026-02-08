@@ -95,11 +95,7 @@ void Cgi::SetEnv()
     {
         std::cout << "hna 2" << std::endl;
         throw HTTP_INTERNAL_SERVER_ERROR;
-
     }
-        
-        
-
 }
 
 void Cgi::CreateChild()
@@ -251,3 +247,4 @@ MySpace::BufferRequest Cgi::handleCgiRequest(MySpace::BufferRequest buffer)
     }
     return _Buffer;
 }
+

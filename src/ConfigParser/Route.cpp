@@ -163,4 +163,3 @@ void Route::insertRedirect(std::string &redirect)
         this->redirect.insert(std::make_pair(num, word));
     }
 }
-

@@ -25,7 +25,6 @@ int clsServer::_BindSocket(int server_fd,Config server)
         close(server_fd);
         throw std::runtime_error("invalid IP address");
     }
-    //address.sin_addr.s_addr = INADDR_ANY;
 
     if (bind(server_fd, (sockaddr *)&address, sizeof(address)) < 0)
     {

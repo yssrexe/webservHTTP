@@ -31,7 +31,6 @@ std::string clsResponse::buildResponse(int code,const std::string file)
 
 clsResponse::clsResponse(int NumberError,MySpace::BufferRequest &Buffer,int fd_Clieant,Config ConfigServer) : _Buffer(Buffer)
 {
-
     _HappenError = true;
     _NumberError = NumberError;
     _ConfigServer = ConfigServer;
@@ -41,7 +40,6 @@ clsResponse::clsResponse(int NumberError,MySpace::BufferRequest &Buffer,int fd_C
 
 clsResponse::clsResponse(int fd_Client,MySpace::BufferRequest &Buffer,Config ConfigServer) : _Buffer(Buffer)
 {
-    
     _HappenError = false;
     _ConfigServer = ConfigServer;
     _fd_Clieant = fd_Client;
