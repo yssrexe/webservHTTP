@@ -147,7 +147,7 @@ void clsResponse::_performentPost()
 {
     std::stringstream response;
 
-    response << "HTTP/1.1 200 Created\r\n";
+    response << "HTTP/1.1 201 Created\r\n";
     response << "Content-Length: 0\r\n";
     response << "Connection: close\r\n";
     response << "\r\n";
