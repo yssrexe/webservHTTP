@@ -145,7 +145,6 @@ void clsResponse::_performentDelete(std::string path)
 
 void clsResponse::_performentPost()
 {
-    std::cout << "perform post" << std::endl;
     std::stringstream response;
 
     response << "HTTP/1.1 201 Created\r\n";
