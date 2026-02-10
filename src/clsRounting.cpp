@@ -177,9 +177,11 @@ MySpace::BufferRequest clsRounting::CheckRounting()
         if (route->redirect.size())
         {
             std::map<int, std::string>::const_iterator it = route->redirect.begin();
-            
-            _Buffer.BufferRead.RequestAtEnd.target = it->second;
             _Buffer.BufferRead.nbrRedirects = it->first;
+            if (it->first == 301)
+                _Buffer.BufferRead.RequestAtEnd.target = it->second;
+            else if (it->first == 302)
+                 _Buffer.BufferRead.RequestAtEnd.target = "/" + it->second;
             _Buffer.BufferRead.isRedirection = true;
             return _Buffer;
         }

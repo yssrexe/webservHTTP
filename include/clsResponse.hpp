@@ -32,7 +32,7 @@ private:
     void _performentDelete(std::string path);
     void _performentPost();
     bool CheckIsCGI();
-    void sendRedirect(const std::string& redirectPath, int statusCode = 301); // for redirect responses
+    void sendRedirect(const std::string redirectPath, int statusCode = 301); // for redirect responses
     void sendHeaderCGI();
     void BuildResponseAutoIndex();
     void BuildResponseCgi();

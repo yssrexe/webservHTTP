@@ -157,7 +157,7 @@ void clsResponse::_performentPost()
     _Buffer.BufferWrite.isComplete = true;
 }
 
-void clsResponse::sendRedirect(const std::string& redirectPath, int statusCode)
+void clsResponse::sendRedirect(const std::string redirectPath, int statusCode)
 {
     std::stringstream response;
     std::string statusMessage;
@@ -166,13 +166,7 @@ void clsResponse::sendRedirect(const std::string& redirectPath, int statusCode)
         statusMessage = "Moved Permanently";
     else if (statusCode == 302)
         statusMessage = "Found";
-    else if (statusCode == 303)
-        statusMessage = "See Other";
-    else if (statusCode == 307)
-        statusMessage = "Temporary Redirect";
-    else
-        statusMessage = "Moved";
-    
+ 
     response << "HTTP/1.1 " << statusCode << " " << statusMessage << "\r\n";
     response << "Location: " << redirectPath << "\r\n";
     response << "Content-Length: 0\r\n";
