@@ -136,6 +136,13 @@ void clsRounting::checkRoutingForPost()
     _Buffer.BufferRead.isRouting = true;
     _Buffer.BufferRead.RequestAtEnd.route = *route;
     _Buffer.BufferRead.RequestAtEnd.target = "" + _Buffer.BufferRead.RequestAtEnd.route.upload_dir + "/" + MySpace::generateUniqueFilename(_Buffer.BufferRead.Content_Type);
+    
+    // Set TargetCGI for CGI POST requests
+    if (_Buffer.BufferRead.RequestAtEnd.isRequestForCGI)
+    {
+        _Buffer.BufferRead.RequestAtEnd.TargetCGI = _Buffer.BufferRead.RequestAtEnd.target;
+        std::cout << "Target CGI: " << _Buffer.BufferRead.RequestAtEnd.TargetCGI << std::endl;
+    }
 }
 
 bool clsRounting::IsNotPostMethod()
