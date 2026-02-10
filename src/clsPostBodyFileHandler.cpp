@@ -64,7 +64,7 @@ void clsPostBodyFileHandler::sendRequestToTarget(std::string path)
         }
     }
     
-    if ((_Buffer.BufferRead.ContentLength > 0 && _Buffer.BufferRead.bodyBytesProcessed >= _Buffer.BufferRead.ContentLength) || _Buffer.BufferRead.isComplete)
+    if ((_Buffer.BufferRead.ContentLength >= 0 && _Buffer.BufferRead.bodyBytesProcessed >= _Buffer.BufferRead.ContentLength) || _Buffer.BufferRead.isComplete)
     {
         close(_Buffer.BufferRead.fd);
         _Buffer.BufferRead.isComplete = true;

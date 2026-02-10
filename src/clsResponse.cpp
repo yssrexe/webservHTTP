@@ -125,7 +125,7 @@ void clsResponse::_performentDelete(std::string path)
     std::stringstream response ;
 
 
-    response << "HTTP/1.1 " << HTTP_SUCCESS << " " << MySpace::getStatusReason(HTTP_SUCCESS) << "\r\n";
+    response << "HTTP/1.1 " << HTTP_NO_CONTENT << " " << MySpace::getStatusReason(HTTP_NO_CONTENT) << "\r\n";
     response << "Content-Type: "<< MySpace::getContentType(path) << "\r\n";
     response << "Content-Length: " << 0 << "\r\n";
     response << "Connection: close\r\n";
@@ -133,7 +133,7 @@ void clsResponse::_performentDelete(std::string path)
 
     if (std::remove(path.c_str()) != 0)
     {
-        std::cout << "hna 1" << std::endl;
+        std::cout << "failded remove" << std::endl;
         throw HTTP_INTERNAL_SERVER_ERROR;
     }
         
@@ -145,6 +145,7 @@ void clsResponse::_performentDelete(std::string path)
 
 void clsResponse::_performentPost()
 {
+    std::cout << "perform post" << std::endl;
     std::stringstream response;
 
     response << "HTTP/1.1 201 Created\r\n";

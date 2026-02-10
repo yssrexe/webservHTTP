@@ -136,8 +136,6 @@ void clsServer::_CleanUpClientFd(int client_fd)
 
     if (mapBuffers.count(client_fd))
         mapBuffers.erase(client_fd);
-    // if (mapCheckTimeOut.count(client_fd))
-    //     mapCheckTimeOut.erase(client_fd);
     if (clientToServer.count(client_fd))
         clientToServer.erase(client_fd);
     if (fdEventMask.count(client_fd))
@@ -280,7 +278,6 @@ void clsServer::_HandleTimeOutforCGI(int client_fd)
     if (kill(mapBuffers[client_fd].BufferRead._pid, SIGTERM) == -1)
     {
         std::cerr << "Failed to kill CGI process with PID: " << mapBuffers[client_fd].BufferRead._pid << std::endl;
-        return;
     }
     int status;
     waitpid(mapBuffers[client_fd].BufferRead._pid, &status, 0);
@@ -298,8 +295,6 @@ void clsServer::_HandleTimeOutforNoCGI(int client_fd)
     MySpace::BufferRequest buffer = _InitBuffersWithFlags();
     clsResponse ErrorResponse(HTTP_TIME_OUT, buffer, client_fd, mapServers[clientToServer[client_fd]]);
     ErrorResponse.SendResponse();
-    // epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client_fd, NULL);
-    // close(client_fd);
     _CleanUpClientFd(client_fd);
 }
 
@@ -377,7 +372,6 @@ void  clsServer::Run()
                 {
                    mapCheckTimeOut.erase(fd);
                 }
-
                 if (events[i].events & EPOLLOUT)
                 {
                     _ProcessEpollOutRequestStatus();
