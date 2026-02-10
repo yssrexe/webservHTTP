@@ -1,6 +1,7 @@
 #include "../../include/Config.hpp"
 #include "../../include/Route.hpp"
 #include <algorithm>
+#include <sstream>
 
 
 
@@ -100,7 +101,19 @@ void Servers::checkServers()
             throw std::runtime_error("Invalid server: max_body_size directive is required");
         if (srv.error_pages.empty())
             throw std::runtime_error("Invalid server: error_pages directive is required");
-
+        
+        int required_codes[] = {200, 204, 400, 401, 403, 404, 405, 408, 409, 413, 414, 415, 500, 502, 504};
+        int required_count = sizeof(required_codes) / sizeof(required_codes[0]);
+        for (int i = 0; i < required_count; i++)
+        {
+            if (srv.error_pages.find(required_codes[i]) == srv.error_pages.end())
+            {
+                std::stringstream ss;
+                ss << "Missing required error page for code: " << required_codes[i];
+                throw std::runtime_error(ss.str());
+            }
+        }
+        
         for (size_t iRoute = 0; iRoute < srv.routes.size(); iRoute++)
         {
             Route &rt = srv.routes[iRoute];
