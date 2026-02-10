@@ -136,8 +136,8 @@ void clsServer::_CleanUpClientFd(int client_fd)
 
     if (mapBuffers.count(client_fd))
         mapBuffers.erase(client_fd);
-    if (mapCheckTimeOut.count(client_fd))
-        mapCheckTimeOut.erase(client_fd);
+    // if (mapCheckTimeOut.count(client_fd))
+    //     mapCheckTimeOut.erase(client_fd);
     if (clientToServer.count(client_fd))
         clientToServer.erase(client_fd);
     if (fdEventMask.count(client_fd))
@@ -264,6 +264,17 @@ void clsServer::_ProcessEpollinRequestStatus()
     }
 }
 
+void clsServer::deletedExpiredClients()
+{
+    for (size_t i = 0; i < fdExpired.size(); ++i)
+    {
+        int client_fd = fdExpired[i];
+        if (mapCheckTimeOut.count(client_fd))
+            mapCheckTimeOut.erase(client_fd);
+    }
+    fdExpired.clear();
+}
+
 void clsServer::_HandleTimeOutforCGI(int client_fd)
 {
     if (kill(mapBuffers[client_fd].BufferRead._pid, SIGTERM) == -1)
@@ -287,13 +298,14 @@ void clsServer::_HandleTimeOutforNoCGI(int client_fd)
     MySpace::BufferRequest buffer = _InitBuffersWithFlags();
     clsResponse ErrorResponse(HTTP_TIME_OUT, buffer, client_fd, mapServers[clientToServer[client_fd]]);
     ErrorResponse.SendResponse();
-    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client_fd, NULL);
-    close(client_fd);
+    // epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client_fd, NULL);
+    // close(client_fd);
+    _CleanUpClientFd(client_fd);
 }
 
 void clsServer::CheckTimeOutClients()
 {
-    for (std::map<int ,time_t>::iterator it = mapCheckTimeOut.begin(); it != mapCheckTimeOut.end(); )
+    for (std::map<int ,time_t>::iterator it = mapCheckTimeOut.begin(); it != mapCheckTimeOut.end();++it)
     {
         int client_fd = it->first;
         time_t currentTime = time(NULL);
@@ -308,13 +320,10 @@ void clsServer::CheckTimeOutClients()
             {
                 _HandleTimeOutforNoCGI(client_fd);
             }
-            it++;
-        }
-        else
-        {
-            ++it;
+          
         }
     }
+    deletedExpiredClients();
 }
 
 

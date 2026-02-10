@@ -30,6 +30,7 @@ class clsServer
 private:
 
     char buffer[4096];
+    std::vector<int> fdExpired;
     int client_fd;
     int fd;
     std::map<int, int> clientToServer;
@@ -40,6 +41,7 @@ private:
     std::map<int, uint32_t> fdEventMask; 
     int epoll_fd;;
 
+    void deletedExpiredClients();
     void _RegisterFdOnEpoll(int fd, uint32_t events);
     bool _AcceptNewClient();
     void _removeFd(int fd);
