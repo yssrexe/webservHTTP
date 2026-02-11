@@ -112,6 +112,17 @@ void Servers::checkServers()
                 ss << "Missing required error page for code: " << required_codes[i];
                 throw std::runtime_error(ss.str());
             }
+
+            std::string error_page_path = srv.error_pages[required_codes[i]];
+            std::ifstream file(error_page_path.c_str());
+            if (!file.good())
+            {
+                std::stringstream ss;
+                ss << "Error page file does not exist: " << error_page_path 
+                << " (for code: " << required_codes[i] << ")";
+                throw std::runtime_error(ss.str());
+            }
+            file.close();
         }
         
         for (size_t iRoute = 0; iRoute < srv.routes.size(); iRoute++)
