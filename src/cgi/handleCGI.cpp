@@ -223,7 +223,8 @@ MySpace::BufferRequest Cgi::handleCgiRequest(MySpace::BufferRequest buffer)
         _Buffer.BufferRead._pid = pid;
         _Buffer.BufferRead.pipe_in_fd = pipe_in[1];
         _Buffer.BufferRead.pipe_out_fd = pipe_out[0];
-        WritePostBodyToPipe();
+        if(_Buffer.type == MySpace::POSTE)
+            WritePostBodyToPipe();
     }
     else
     {
@@ -236,7 +237,7 @@ MySpace::BufferRequest Cgi::handleCgiRequest(MySpace::BufferRequest buffer)
     {
         if (WEXITSTATUS(statuspid) != 0)
         {
-            std::cout << "hna 8" << std::endl;
+            std::cout << "55" << std::endl;
             throw HTTP_INTERNAL_SERVER_ERROR;
         }
             
