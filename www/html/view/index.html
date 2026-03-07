@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Navbar Page</title>
+    <title>WebServ - HTTP/1.1 Server</title>
     <style>
         * {
             margin: 0;
@@ -21,8 +21,18 @@
             padding: 15px 20px;
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }
+
+        .navbar .brand {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            margin-right: 20px;
+            letter-spacing: 1px;
         }
 
         .navbar form {
@@ -34,8 +44,8 @@
             background-color: #555;
             color: white;
             border: none;
-            padding: 12px 24px;
-            font-size: 16px;
+            padding: 10px 20px;
+            font-size: 14px;
             cursor: pointer;
             border-radius: 4px;
             transition: background-color 0.3s ease;
@@ -49,37 +59,167 @@
             background-color: #999;
         }
 
-        .content {
-            max-width: 1200px;
+        .hero {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .hero h1 {
+            font-size: 2.4em;
+            margin-bottom: 12px;
+            color: white;
+        }
+
+        .hero .badge {
+            display: inline-block;
+            background-color: #555;
+            color: #ccc;
+            font-size: 13px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin: 4px;
+        }
+
+        .hero p {
+            font-size: 1.1em;
+            color: #bbb;
+            margin: 20px auto 0;
+            max-width: 600px;
+            line-height: 1.7;
+        }
+
+        .features {
+            max-width: 1100px;
             margin: 40px auto;
-            padding: 20px;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
             background-color: white;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 28px 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: box-shadow 0.2s ease;
         }
 
-        h1 {
+        .card:hover {
+            box-shadow: 0 4px 18px rgba(0,0,0,0.13);
+        }
+
+        .card .icon {
+            font-size: 2em;
+            margin-bottom: 12px;
+        }
+
+        .card h2 {
             color: #333;
-            margin-bottom: 20px;
+            font-size: 1.1em;
+            margin-bottom: 10px;
         }
 
-        p {
+        .card p {
             color: #666;
+            font-size: 14px;
             line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        .card a {
+            display: inline-block;
+            background-color: #555;
+            color: white;
+            text-decoration: none;
+            padding: 9px 18px;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .card a:hover {
+            background-color: #777;
+        }
+
+        .info-section {
+            max-width: 1100px;
+            margin: 0 auto 40px;
+            padding: 0 20px;
+        }
+
+        .info-box {
+            background-color: white;
+            border-radius: 8px;
+            padding: 28px 32px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .info-box h2 {
+            color: #333;
+            margin-bottom: 16px;
+            font-size: 1.2em;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 10px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 14px;
+            color: #555;
+            padding: 6px 0;
+        }
+
+        .info-item .check {
+            color: #22c55e;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .quick-start {
+            max-width: 1100px;
+            margin: 0 auto 50px;
+            padding: 0 20px;
+        }
+
+        .quick-start .info-box pre {
+            background-color: #f4f4f4;
+            border-radius: 4px;
+            padding: 16px;
+            font-size: 13px;
+            color: #333;
+            overflow-x: auto;
+            margin-top: 12px;
+        }
+
+        footer {
+            background-color: #333;
+            color: #aaa;
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
         }
     </style>
 </head>
 <body>
     <nav class="navbar">
+        <span class="brand">⚙ WebServ</span>
         <form action="/" method="get">
-            <input type="hidden" name="page" value="home">
             <button type="submit">Home</button>
         </form>
         <form action="/cgi/testCgifile.py" method="get">
-            <button type="submit">CGI</button>
+            <button type="submit">CGI Demo</button>
         </form>
-        <form action="/login.html" method="get" >
-            <button type="submit">session managment</button>
+        <form action="/login.html" method="get">
+            <button type="submit">Session</button>
         </form>
         <form action="/uploads/uploadTest.html" method="get">
             <button type="submit">Upload</button>
@@ -91,10 +231,90 @@
             <button type="submit">Auto-Index</button>
         </form>
     </nav>
-    <div class="content">
-        <h1>Welcome to My Website</h1>
-        <p>This is a simple HTML page with a navbar containing 6 buttons. Click any button in the navigation bar above to see an interaction!</p>
-        <p>Feel free to customize the styles and functionality to suit your needs.</p>
+
+    <div class="hero">
+        <h1>⚙ WebServ</h1>
+        <div>
+            <span class="badge">C++98</span>
+            <span class="badge">HTTP/1.1</span>
+            <span class="badge">epoll</span>
+            <span class="badge">42 School Project</span>
+        </div>
+        <p>A lightweight, high-performance HTTP/1.1 web server written in C++98. Supports CGI, file uploads, session management, directory listing, and custom routing — all driven by an epoll event loop.</p>
     </div>
+
+    <div class="features">
+        <div class="card">
+            <div class="icon">🔌</div>
+            <h2>CGI Scripts</h2>
+            <p>Execute dynamic Python, PHP, and Shell scripts via the CGI/1.1 interface. Try the built-in test script to see live output.</p>
+            <a href="/cgi/testCgifile.py">Run CGI Demo →</a>
+        </div>
+        <div class="card">
+            <div class="icon">🔐</div>
+            <h2>Session Management</h2>
+            <p>Cookie-based login, registration, and logout flow handled entirely by CGI scripts on the server.</p>
+            <a href="/login.html">Go to Login →</a>
+        </div>
+        <div class="card">
+            <div class="icon">📤</div>
+            <h2>File Upload</h2>
+            <p>Upload files using multipart/form-data. The server stores them in the configured upload directory (max 10 MB).</p>
+            <a href="/uploads/uploadTest.html">Upload a File →</a>
+        </div>
+        <div class="card">
+            <div class="icon">🗑️</div>
+            <h2>File Deletion</h2>
+            <p>Send HTTP DELETE requests to remove files from the server. Route-level method restrictions keep it safe.</p>
+            <a href="/deleteTest.html">Delete a File →</a>
+        </div>
+        <div class="card">
+            <div class="icon">📂</div>
+            <h2>Directory Listing</h2>
+            <p>Automatically generated directory index pages when <code>DIR_LISTING=on</code> is set for a route.</p>
+            <a href="/auto-index">Browse Auto-Index →</a>
+        </div>
+        <div class="card">
+            <div class="icon">⚙️</div>
+            <h2>Custom Configuration</h2>
+            <p>NGINX-style config file controls ports, virtual hosts, error pages, routes, CGI extensions, and more.</p>
+            <a href="https://github.com/yssrexe/webservHTTP#configuration" target="_blank" rel="noopener noreferrer">View Docs →</a>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <div class="info-box">
+            <h2>✅ Server Capabilities</h2>
+            <div class="info-grid">
+                <div class="info-item"><span class="check">✓</span> HTTP/1.1 protocol (RFC 2616)</div>
+                <div class="info-item"><span class="check">✓</span> GET, POST, DELETE methods</div>
+                <div class="info-item"><span class="check">✓</span> Non-blocking I/O with epoll</div>
+                <div class="info-item"><span class="check">✓</span> Multiple virtual servers</div>
+                <div class="info-item"><span class="check">✓</span> Custom error pages (4xx / 5xx)</div>
+                <div class="info-item"><span class="check">✓</span> CGI support (.py, .php, .sh)</div>
+                <div class="info-item"><span class="check">✓</span> Chunked transfer encoding</div>
+                <div class="info-item"><span class="check">✓</span> HTTP redirections (301/302)</div>
+                <div class="info-item"><span class="check">✓</span> Configurable max body size</div>
+                <div class="info-item"><span class="check">✓</span> Per-route method restrictions</div>
+                <div class="info-item"><span class="check">✓</span> Client timeout management</div>
+                <div class="info-item"><span class="check">✓</span> C++98 standard compliant</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quick-start">
+        <div class="info-box">
+            <h2>🚀 Quick Start</h2>
+            <pre>git clone https://github.com/yssrexe/webservHTTP.git
+cd webservHTTP
+make
+./webserv                        # uses webserv.conf by default
+# open http://localhost:8081/</pre>
+        </div>
+    </div>
+
+    <footer>
+        Made with ❤️ by <strong>Yassir El Yasini</strong> &amp; <strong>Ayoub Bouatrouss</strong> — 1337 (42) School · 2026
+    </footer>
 </body>
 </html>
